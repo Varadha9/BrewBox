@@ -23,6 +23,8 @@
 ## 📖 Table of Contents
 
 - [About BrewBox](#-about-brewbox)
+- [Application Showcase (Live Device)](#-application-showcase-live-device)
+- [🎓 CPAD Academic Jury Presentation](#-cpad-academic-jury-presentation)
 - [Design Philosophy: Anti-AI Aesthetic](#-design-philosophy-anti-ai-aesthetic)
 - [Curated Features](#-curated-features)
 - [Sensory UI Components](#-sensory-ui-components)
@@ -34,6 +36,49 @@
 - [Testing & Quality Assurance](#-testing--quality-assurance)
 - [Roadmap & Integrations](#-roadmap--integrations)
 - [Author & Acknowledgments](#-author--acknowledgments)
+
+---
+
+## 📱 Application Showcase (Live Device)
+
+> Real device captures running the standalone release build on physical hardware (**Vivo 1919 / Android 12**):
+
+| 🏠 Roastery Home | 🔍 Explore & Filter | ☕ Product Details & Dial-In |
+|:---:|:---:|:---:|
+| <img src="./docs/screenshots/screen_home.png" width="230" alt="Roastery Home" /> | <img src="./docs/screenshots/screen_explore.png" width="230" alt="Explore & Filter" /> | <img src="./docs/screenshots/screen_details.png" width="230" alt="Product Details" /> |
+| *Curated micro-lots, roast schedule banner & quick quiz card* | *Facet filtering across beans, teas, origins, roast levels & MASL* | *RoastMeter gauge, sensory radar, grind selector & brew recipe* |
+
+| 🛒 Roastery Cart | 🧭 Palate Matcher Quiz | 👤 Palate Profile & Orders |
+|:---:|:---:|:---:|
+| <img src="./docs/screenshots/screen_cart.png" width="230" alt="Roastery Cart" /> | <img src="./docs/screenshots/screen_quiz.png" width="230" alt="Palate Matcher" /> | <img src="./docs/screenshots/screen_palate.png" width="230" alt="Palate Profile" /> |
+| *Free-shipping progress meter, promo validation & order breakdown* | *3-step interactive recommendation wizard for extraction & flavor* | *Palate profile attributes, 5-stage live order tracking & wishlist* |
+
+---
+
+## 🎓 CPAD Academic Jury Presentation
+
+A 12-slide presentation developed specifically for the **Cross Platform Application Development (CPAD)** university jury examination, covering React Native architecture, state management patterns, and offline native compilation:
+
+- 📊 **PowerPoint Deck:** [`BrewBox_Jury_Presentation.pptx`](./BrewBox_Jury_Presentation.pptx) *(16:9 Widescreen, Editable)*
+- 📄 **PDF Presentation:** [`docs/BrewBox_Jury_Presentation.pdf`](./docs/BrewBox_Jury_Presentation.pdf) *(Ready for presentation/print)*
+- 🖼️ **Slide Gallery (PNG):** [`docs/slides_png/`](./docs/slides_png/)
+
+### Presentation Overview (12 Slides)
+
+| Slide | Topic | CPAD Academic Focus |
+|:---:|:---|:---|
+| **01** | **Cover & Candidate Profile** | Title, academic course credentials, React Native 0.87 & Hermes engine tags |
+| **02** | **Motivation & CPAD Paradigm** | Native Silos (Kotlin/Swift) vs Hybrid WebViews (Cordova/PWA) vs React Native |
+| **03** | **CPAD Course Objectives** | 6 academic outcomes: cross-platform architecture, UI primitives, state, SVG, APK |
+| **04** | **Technology Stack & Tooling** | React Native, TypeScript 6.0, Zustand 5.0, React Navigation 7, Gradle, Jest |
+| **05** | **Topology & Navigation** | Navigation tree hierarchy, `SafeAreaProvider`, bottom tabs, modals & stack navigator |
+| **06** | **Screens & Implementation** | 4-device breakdown: Home, Explore/Filter, Sensory Details, Roastery Cart |
+| **07** | **State Management & Data Flow** | Context API vs Redux Toolkit vs Zustand 5.0 (atomic selectors, zero boilerplate) |
+| **08** | **Styling & Yoga Flexbox Engine** | Flexbox layout engine in C++, design tokens, compiled StyleSheet caching, SVG pipeline |
+| **09** | **Performance & Optimizations** | Hermes AOT bytecode, flat component hierarchy, FlatList virtualization, memory safety |
+| **10** | **Native Build & Offline APK** | Standalone bundling, `assets/index.android.bundle`, `useDevSupport = false`, release APK |
+| **11** | **Testing, Verification & Quality** | Strict TypeScript check (0 errors), ESLint (0 warnings), Jest unit tests (7/7 passed) |
+| **12** | **Conclusion & Academic Takeaways** | Cross-platform code reuse, component architecture, state mastery, production APK |
 
 ---
 
