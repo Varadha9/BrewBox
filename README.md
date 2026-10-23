@@ -55,7 +55,16 @@
 
 ---
 
-## 🎓 CPAD Academic Jury Presentation
+## 🎓 CPAD Academic Jury Presentation & Project Report
+
+### 📑 Comprehensive Academic Project Report (21 Pages)
+
+Formatted to MIT School of Computing, MIT-ADT University guidelines with custom cover page, formal acknowledgement, detailed index, system architecture, offline Hermes build pipeline, and physical device screenshot showcase:
+
+- 📕 **Full Project Report (PDF):** [`BrewBox_Project_Report.pdf`](./BrewBox_Project_Report.pdf) *(Print/Submit ready)*
+- 📝 **Editable Word Document (DOCX):** [`BrewBox_Project_Report.docx`](./BrewBox_Project_Report.docx) *(Full report with styles & tables)*
+
+### 📊 Jury Exam Presentation Deck (12 Slides)
 
 A 12-slide presentation developed specifically for the **Cross Platform Application Development (CPAD)** university jury examination, covering React Native architecture, state management patterns, and offline native compilation:
 
