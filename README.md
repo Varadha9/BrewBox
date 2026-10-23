@@ -24,7 +24,7 @@
 
 - [About BrewBox](#-about-brewbox)
 - [Application Showcase (Live Device)](#-application-showcase-live-device)
-- [🎓 CPAD Academic Jury Presentation](#-cpad-academic-jury-presentation)
+- [🎓 CPAD Academic Jury Presentation & Project Report](#-cpad-academic-jury-presentation--project-report)
 - [Design Philosophy: Anti-AI Aesthetic](#-design-philosophy-anti-ai-aesthetic)
 - [Curated Features](#-curated-features)
 - [Sensory UI Components](#-sensory-ui-components)
@@ -59,17 +59,23 @@
 
 ### 📑 Comprehensive Academic Project Report (21 Pages)
 
-Formatted to MIT School of Computing, MIT-ADT University guidelines with custom cover page, formal acknowledgement, detailed index, system architecture, offline Hermes build pipeline, and physical device screenshot showcase:
+Formatted strictly according to MIT School of Computing, MIT-ADT University guidelines with custom cover page, formal acknowledgement, detailed index, system architecture, offline Hermes build pipeline, and physical device screenshot showcase:
 
 - 📕 **Full Project Report (PDF):** [`BrewBox_Project_Report.pdf`](./BrewBox_Project_Report.pdf) *(Print/Submit ready)*
 - 📝 **Editable Word Document (DOCX):** [`BrewBox_Project_Report.docx`](./BrewBox_Project_Report.docx) *(Full report with styles & tables)*
 
-### 📊 Jury Exam Presentation Deck (12 Slides)
+| 📄 Cover Page (Page 1) | ✍️ Acknowledgement (Page 2) | 📋 Table of Contents (Page 3) |
+|:---:|:---:|:---:|
+| <img src="./docs/report_pages_png/page-01.png" width="230" alt="Cover Page" /> | <img src="./docs/report_pages_png/page-02.png" width="230" alt="Acknowledgement" /> | <img src="./docs/report_pages_png/page-03.png" width="230" alt="Table of Contents" /> |
+| *Official MIT-ADT Crest & Credentials* | *Academic Gratitude & Sign-off* | *Complete 9-Chapter Detailed Index* |
+
+### 📊 Jury Exam Presentation Deck & Storytelling Script
 
 A 12-slide presentation developed specifically for the **Cross Platform Application Development (CPAD)** university jury examination, covering React Native architecture, state management patterns, and offline native compilation:
 
 - 📊 **PowerPoint Deck:** [`BrewBox_Jury_Presentation.pptx`](./BrewBox_Jury_Presentation.pptx) *(16:9 Widescreen, Editable)*
 - 📄 **PDF Presentation:** [`docs/BrewBox_Jury_Presentation.pdf`](./docs/BrewBox_Jury_Presentation.pdf) *(Ready for presentation/print)*
+- 🎙️ **Slide-by-Slide Storytelling Script:** [`docs/PRESENTATION_STORYTELLING.md`](./docs/PRESENTATION_STORYTELLING.md) *(Word-for-word jury speech & 60-second elevator pitch)*
 - 🖼️ **Slide Gallery (PNG):** [`docs/slides_png/`](./docs/slides_png/)
 
 ### Presentation Overview (12 Slides)
