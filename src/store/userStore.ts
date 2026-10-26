@@ -9,6 +9,7 @@
 import { create } from 'zustand';
 import {
   CartItem,
+  GrindOption,
   Order,
   OrderTrackingStep,
   PaymentMethodType,
@@ -18,20 +19,8 @@ import {
   UserTasteProfile,
 } from '../types';
 
-// ── Fallback Address Template ────────────────────────────────────────────────
-const createDefaultAddress = (name: string, phone: string): ShippingAddress => ({
-  id: `addr-${Date.now()}`,
-  fullName: name,
-  phone: phone,
-  street: '12th Main Road, Roastery Quarter',
-  city: 'Pune',
-  state: 'Maharashtra',
-  postalCode: '412201',
-  isDefault: true,
-});
-
 // ── Profile Factory ──────────────────────────────────────────────────────────
-// Generates a complete UserProfile for a newly registered or authenticated user
+// Generates a clean UserProfile for a newly registered user (NO default mock data)
 export const createProfileForUser = (user: {
   id: string;
   name: string;
@@ -43,16 +32,10 @@ export const createProfileForUser = (user: {
   email: user.email,
   phone: user.phone,
   memberTier: 'Artisan Bronze',
-  memberPoints: 100, // 100 welcome bean rewards upon sign up
-  tasteProfile: {
-    preferredRoast: ['Medium-Light'],
-    preferredBrewMethods: ['Hario V60'],
-    tasteLeaning: 'Balanced & Sweet',
-    milkPreference: 'Black / Straight',
-    cupFrequencyDaily: 2,
-  },
-  addresses: [createDefaultAddress(user.name, user.phone)],
-  defaultGrindPreference: 'Pour Over / V60 (Medium)',
+  memberPoints: 0,              // Starts at 0 points (earned from real orders)
+  tasteProfile: null,           // Not calibrated until user takes Coffee Quiz
+  addresses: [],                // Empty until user saves an address
+  defaultGrindPreference: null, // Not set until user chooses one
 });
 
 // ── UserStore Interface ───────────────────────────────────────────────────────
@@ -86,6 +69,7 @@ export interface UserStore {
 
   // ── Profile & Address Actions ──
   updateTasteProfile: (profile: Partial<UserTasteProfile>) => void;
+  setDefaultGrindPreference: (grind: GrindOption) => void;
   addAddress: (address: Omit<ShippingAddress, 'id'>) => void;
   setDefaultAddress: (addressId: string) => void;
 
@@ -97,7 +81,8 @@ export interface UserStore {
     shipping: number,
     tax: number,
     total: number,
-    paymentMethod: PaymentMethodType
+    paymentMethod: PaymentMethodType,
+    deliveryAddress?: ShippingAddress
   ) => Order;
 }
 
@@ -192,13 +177,33 @@ export const useUserStore = create<UserStore>((set, get) => ({
   updateTasteProfile: (newProfile) => {
     set((state) => {
       if (!state.profile) return state;
+      const baseTaste: UserTasteProfile = state.profile.tasteProfile || {
+        preferredRoast: ['Medium-Light'],
+        preferredBrewMethods: ['Hario V60'],
+        tasteLeaning: 'Balanced & Sweet',
+        milkPreference: 'Black / Straight',
+        cupFrequencyDaily: 2,
+      };
       return {
         profile: {
           ...state.profile,
           tasteProfile: {
-            ...state.profile.tasteProfile,
+            ...baseTaste,
             ...newProfile,
           },
+        },
+      };
+    });
+  },
+
+  // ── setDefaultGrindPreference ───────────────────────────────────────────────
+  setDefaultGrindPreference: (grind) => {
+    set((state) => {
+      if (!state.profile) return state;
+      return {
+        profile: {
+          ...state.profile,
+          defaultGrindPreference: grind,
         },
       };
     });
@@ -245,13 +250,23 @@ export const useUserStore = create<UserStore>((set, get) => ({
     shipping,
     tax,
     total,
-    paymentMethod
+    paymentMethod,
+    deliveryAddress
   ) => {
     const currentProfile = get().profile;
-    const defaultAddr =
+    const defaultAddr: ShippingAddress =
+      deliveryAddress ||
       currentProfile?.addresses.find((a) => a.isDefault) ||
-      currentProfile?.addresses[0] ||
-      createDefaultAddress('BrewBox Member', '+91 98765 43210');
+      currentProfile?.addresses[0] || {
+        id: `addr-${Date.now()}`,
+        fullName: currentProfile?.name || 'Roastery Member',
+        phone: currentProfile?.phone || '+91 98765 43210',
+        street: 'Express Roastery Pickup',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        postalCode: '400001',
+        isDefault: true,
+      };
 
     const steps: OrderTrackingStep[] = [
       {

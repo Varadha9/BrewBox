@@ -35,9 +35,11 @@ describe('BrewBox Local Authentication & Registration Tests', () => {
     expect(updated.isAuthenticated).toBe(true);
     expect(updated.profile).not.toBeNull();
     expect(updated.profile?.name).toBe('Varad Mandhare');
-    expect(updated.profile?.email).toBe('varad@brewbox.craft');
-    expect(updated.profile?.memberPoints).toBe(100); // 100 welcome bean rewards
+    expect(updated.profile?.memberPoints).toBe(0); // Starts at 0 points (earned from real orders)
     expect(updated.profile?.memberTier).toBe('Artisan Bronze');
+    expect(updated.profile?.tasteProfile).toBeNull(); // Palate is uncalibrated initially
+    expect(updated.profile?.addresses).toEqual([]); // No default fake addresses
+    expect(updated.profile?.defaultGrindPreference).toBeNull(); // No default grind
 
     // Stored locally in registeredUsers
     expect(updated.registeredUsers.length).toBe(1);

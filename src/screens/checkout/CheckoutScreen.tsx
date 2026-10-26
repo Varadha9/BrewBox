@@ -4,11 +4,13 @@
 
 import React, { useState } from 'react';
 import {
+  Alert,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,7 +27,7 @@ interface CheckoutScreenProps {
 
 export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   const { items, getPricing, clearCart } = useCartStore();
-  const { profile, createOrderFromCart } = useUserStore();
+  const { profile, createOrderFromCart, addAddress } = useUserStore();
   // pricing = full breakdown: subtotal, discount, shipping, tax, total
   const pricing = getPricing();
 
@@ -38,14 +40,56 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) =>
   // successOrder — holds the newly created order; triggers success modal when set
   const [successOrder, setSuccessOrder] = useState<any>(null);
 
+  // Dynamic address entry fields when user has no saved addresses
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [stateName, setStateName] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [addressError, setAddressError] = useState('');
+
   if (!profile) {
     return null;
   }
 
-  const selectedAddress = profile.addresses[selectedAddressIndex] || profile.addresses[0];
+  const selectedAddress =
+    profile.addresses.length > 0
+      ? profile.addresses[selectedAddressIndex] || profile.addresses[0]
+      : null;
 
-  // handlePlaceOrder — simulates a 1.2s payment delay, then creates the order
+  // handlePlaceOrder — validates address, simulates 1.2s delay, then creates order
   const handlePlaceOrder = () => {
+    let orderAddress = selectedAddress;
+
+    if (!orderAddress) {
+      if (!street.trim() || !city.trim() || !stateName.trim() || !postalCode.trim()) {
+        setAddressError('Please enter complete delivery details below.');
+        Alert.alert('Address Required', 'Please enter your street address, city, state and PIN code to proceed with checkout.');
+        return;
+      }
+
+      orderAddress = {
+        id: `addr-${Date.now()}`,
+        fullName: profile.name,
+        phone: profile.phone,
+        street: street.trim(),
+        city: city.trim(),
+        state: stateName.trim(),
+        postalCode: postalCode.trim(),
+        isDefault: true,
+      };
+
+      // Also persist to user profile so future orders can reuse it
+      addAddress({
+        fullName: profile.name,
+        phone: profile.phone,
+        street: street.trim(),
+        city: city.trim(),
+        state: stateName.trim(),
+        postalCode: postalCode.trim(),
+        isDefault: true,
+      });
+    }
+
     setIsPlacingOrder(true);
     setTimeout(() => {
       const order = createOrderFromCart(
@@ -55,7 +99,8 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) =>
         pricing.shippingFee,
         pricing.taxAmount,
         pricing.total,
-        selectedPayment
+        selectedPayment,
+        orderAddress || undefined
       );
       clearCart();           // empty the cart after order is placed
       setIsPlacingOrder(false);
@@ -94,17 +139,77 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) =>
             <View style={styles.cardIcon}>
               <BespokeIcon name="map-pin" size={18} color={Colors.light.primary} />
             </View>
-            <Text style={styles.cardTitle}>Delivery Address</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardTitle}>Delivery Address</Text>
+              {!selectedAddress && (
+                <Text style={styles.cardSubtitle}>
+                  Enter delivery destination for fresh dispatch
+                </Text>
+              )}
+            </View>
           </View>
-          {/* Show the selected address details */}
-          <View style={styles.addressBox}>
-            <Text style={styles.addressName}>{selectedAddress.fullName}</Text>
-            <Text style={styles.addressText}>{selectedAddress.street}</Text>
-            <Text style={styles.addressText}>
-              {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.postalCode}
-            </Text>
-            <Text style={styles.addressPhone}>Phone: {selectedAddress.phone}</Text>
-          </View>
+
+          {selectedAddress ? (
+            /* Show the selected address details */
+            <View style={styles.addressBox}>
+              <Text style={styles.addressName}>{selectedAddress.fullName}</Text>
+              <Text style={styles.addressText}>{selectedAddress.street}</Text>
+              <Text style={styles.addressText}>
+                {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.postalCode}
+              </Text>
+              <Text style={styles.addressPhone}>Phone: {selectedAddress.phone}</Text>
+            </View>
+          ) : (
+            /* Dynamic inline address entry */
+            <View style={styles.addressEntryBox}>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Street Address, Building, Flat"
+                placeholderTextColor={Colors.light.textMuted}
+                value={street}
+                onChangeText={(t) => {
+                  setStreet(t);
+                  setAddressError('');
+                }}
+              />
+              <View style={styles.formRow}>
+                <TextInput
+                  style={[styles.formInput, { flex: 1 }]}
+                  placeholder="City"
+                  placeholderTextColor={Colors.light.textMuted}
+                  value={city}
+                  onChangeText={(t) => {
+                    setCity(t);
+                    setAddressError('');
+                  }}
+                />
+                <TextInput
+                  style={[styles.formInput, { flex: 1 }]}
+                  placeholder="PIN Code"
+                  placeholderTextColor={Colors.light.textMuted}
+                  value={postalCode}
+                  onChangeText={(t) => {
+                    setPostalCode(t);
+                    setAddressError('');
+                  }}
+                  keyboardType="number-pad"
+                />
+              </View>
+              <TextInput
+                style={styles.formInput}
+                placeholder="State (e.g. Maharashtra)"
+                placeholderTextColor={Colors.light.textMuted}
+                value={stateName}
+                onChangeText={(t) => {
+                  setStateName(t);
+                  setAddressError('');
+                }}
+              />
+              {addressError ? (
+                <Text style={styles.errorText}>{addressError}</Text>
+              ) : null}
+            </View>
+          )}
         </View>
 
         {/* ── Step 2: Roasting & Dispatch Schedule ── */}
@@ -302,6 +407,35 @@ const styles = StyleSheet.create({
   cardTitle: {
     ...Typography.titleMedium,
     color: Colors.light.textPrimary,
+  },
+  cardSubtitle: {
+    ...Typography.bodySmall,
+    color: Colors.light.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  addressEntryBox: {
+    gap: Spacing.sm,
+  },
+  formInput: {
+    backgroundColor: Colors.light.surfaceElevated,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    ...Typography.bodyMedium,
+    color: Colors.light.textPrimary,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  errorText: {
+    ...Typography.bodySmall,
+    color: Colors.light.error,
+    fontWeight: '600',
+    marginTop: 2,
   },
   // Latte cream address box
   addressBox: {

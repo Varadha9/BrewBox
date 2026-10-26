@@ -27,9 +27,9 @@ export interface UserProfile {
   memberTier: 'Artisan Bronze' | 'Roastery Gold' | 'Connoisseur Black';
   memberPoints: number;  // Points earned: 1 point per ₹10 spent
 
-  tasteProfile: UserTasteProfile;        // Preferences from the Palate Matcher Quiz
-  addresses: ShippingAddress[];          // Saved delivery addresses
-  defaultGrindPreference: GrindOption;   // Pre-selected grind on the product details screen
+  tasteProfile: UserTasteProfile | null; // null until calibrated via CoffeeQuiz
+  addresses: ShippingAddress[];          // Empty until added by user
+  defaultGrindPreference: GrindOption | null; // null until selected by user
 }
 
 // ── RegisteredUser ───────────────────────────────────────────────────────────

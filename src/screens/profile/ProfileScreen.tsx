@@ -1,32 +1,48 @@
 // ProfileScreen.tsx — User's account page showing membership tier, palate preferences,
 // saved addresses, default grind, and an "About BrewBox" section.
-// Also opens the CoffeeQuizModal for palate recalibration.
+// Also opens the CoffeeQuizModal for palate calibration.
 
 import React, { useState } from 'react';
 import {
+  Alert,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Badge, BespokeIcon, CustomButton } from '../../components';
-// useUserStore — reads the logged-in user's profile data
 import { useUserStore } from '../../store';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../theme';
-import { Product } from '../../types';
-// CoffeeQuizModal — the 3-step palate matcher quiz shown as a bottom sheet
+import { GrindOption, Product } from '../../types';
 import { CoffeeQuizModal } from './CoffeeQuizModal';
+
+const AVAILABLE_GRINDS: GrindOption[] = [
+  'Whole Bean',
+  'Pour Over / V60 (Medium)',
+  'Espresso (Fine)',
+  'French Press (Coarse)',
+  'Aeropress',
+  'Moka Pot',
+  'Cold Brew (Extra Coarse)',
+];
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
-  // profile = full user object (name, email, tier, taste preferences, addresses)
-  const { profile, logout } = useUserStore();
-  // quizVisible = controls whether the Palate Matcher quiz modal is open
+  const { profile, logout, addAddress, setDefaultGrindPreference } = useUserStore();
   const [quizVisible, setQuizVisible] = useState(false);
+
+  // Address creation toggle & state
+  const [showAddAddress, setShowAddAddress] = useState(false);
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [stateName, setStateName] = useState('');
+  const [postalCode, setPostalCode] = useState('');
 
   // If user is logged out, avoid rendering profile UI
   if (!profile) {
@@ -38,9 +54,31 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     navigation.navigate('ProductDetails', { product });
   };
 
+  const handleSaveAddress = () => {
+    if (!street.trim() || !city.trim() || !postalCode.trim()) {
+      Alert.alert('Incomplete Address', 'Please provide street address, city, and PIN code.');
+      return;
+    }
+
+    addAddress({
+      fullName: profile.name,
+      phone: profile.phone,
+      street: street.trim(),
+      city: city.trim(),
+      state: stateName.trim() || 'Maharashtra',
+      postalCode: postalCode.trim(),
+      isDefault: profile.addresses.length === 0,
+    });
+
+    setStreet('');
+    setCity('');
+    setStateName('');
+    setPostalCode('');
+    setShowAddAddress(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-
       {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.headerSubtitle}>MEMBER CONNOISSEUR DESK</Text>
@@ -51,10 +89,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-
         {/* ── Member Card ── avatar, name, email, loyalty tier + points */}
         <View style={styles.profileCard}>
-          {/* Avatar circle with coffee bean icon */}
           <View style={styles.avatarCircle}>
             <BespokeIcon name="coffee-bean" size={32} color="#FFFFFF" />
           </View>
@@ -62,9 +98,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             <Text style={styles.userName}>{profile.name}</Text>
             <Text style={styles.userEmail}>{profile.email}</Text>
             <View style={styles.badgeRow}>
-              {/* Loyalty tier badge — Bronze / Gold / Connoisseur Black */}
               <Badge label={profile.memberTier} variant="micro-lot" style={styles.tierBadge} />
-              {/* Points earned: 1 point per ₹10 spent */}
               <Text style={styles.pointsText}>{profile.memberPoints} Bean Rewards</Text>
             </View>
           </View>
@@ -78,65 +112,176 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.sectionTitle}>Your Palate Persona</Text>
-              <Text style={styles.sectionSubtitle}>Custom sensory calibration for curated drops</Text>
+              <Text style={styles.sectionSubtitle}>
+                {profile.tasteProfile
+                  ? 'Custom sensory calibration for curated drops'
+                  : 'Sensory palate not calibrated yet'}
+              </Text>
             </View>
           </View>
 
-          {/* Taste preference key-value rows */}
-          <View style={styles.tasteBox}>
-            <View style={styles.tasteRow}>
-              <Text style={styles.tasteKey}>Flavor Leaning:</Text>
-              <Text style={styles.tasteValue}>{profile.tasteProfile.tasteLeaning}</Text>
-            </View>
-            <View style={styles.tasteRow}>
-              <Text style={styles.tasteKey}>Favorite Brew Gear:</Text>
-              {/* Join multiple brew methods with comma */}
-              <Text style={styles.tasteValue}>{profile.tasteProfile.preferredBrewMethods.join(', ')}</Text>
-            </View>
-            <View style={styles.tasteRow}>
-              <Text style={styles.tasteKey}>Milk Ritual:</Text>
-              <Text style={styles.tasteValue}>{profile.tasteProfile.milkPreference}</Text>
-            </View>
-            <View style={styles.tasteRow}>
-              <Text style={styles.tasteKey}>Daily Frequency:</Text>
-              <Text style={styles.tasteValue}>{profile.tasteProfile.cupFrequencyDaily} cups / day</Text>
-            </View>
-          </View>
+          {profile.tasteProfile ? (
+            <>
+              {/* Actual taste preferences answered in quiz */}
+              <View style={styles.tasteBox}>
+                <View style={styles.tasteRow}>
+                  <Text style={styles.tasteKey}>Flavor Leaning:</Text>
+                  <Text style={styles.tasteValue}>{profile.tasteProfile.tasteLeaning}</Text>
+                </View>
+                <View style={styles.tasteRow}>
+                  <Text style={styles.tasteKey}>Favorite Brew Gear:</Text>
+                  <Text style={styles.tasteValue}>
+                    {profile.tasteProfile.preferredBrewMethods.join(', ')}
+                  </Text>
+                </View>
+                <View style={styles.tasteRow}>
+                  <Text style={styles.tasteKey}>Milk Ritual:</Text>
+                  <Text style={styles.tasteValue}>{profile.tasteProfile.milkPreference}</Text>
+                </View>
+                <View style={styles.tasteRow}>
+                  <Text style={styles.tasteKey}>Daily Frequency:</Text>
+                  <Text style={styles.tasteValue}>
+                    {profile.tasteProfile.cupFrequencyDaily} cups / day
+                  </Text>
+                </View>
+              </View>
 
-          {/* Button to open the quiz and recalibrate taste profile */}
-          <CustomButton
-            title="Recalibrate Palate (Coffee Quiz)"
-            onPress={() => setQuizVisible(true)}
-            variant="outline"
-            size="small"
-            style={styles.quizBtn}
-            icon={<BespokeIcon name="sliders" size={16} color={Colors.light.primary} />}
-          />
+              <CustomButton
+                title="Recalibrate Palate (Coffee Quiz)"
+                onPress={() => setQuizVisible(true)}
+                variant="outline"
+                size="small"
+                style={styles.quizBtn}
+                icon={<BespokeIcon name="sliders" size={16} color={Colors.light.primary} />}
+              />
+            </>
+          ) : (
+            /* Uncalibrated empty state */
+            <View style={styles.emptyCardBox}>
+              <Text style={styles.emptyTitle}>No Sensory Calibration</Text>
+              <Text style={styles.emptySubtext}>
+                Take our 60-second coffee quiz to discover your personalized flavor profile and match single-origins to your brewing ritual.
+              </Text>
+              <CustomButton
+                title="Calibrate My Palate (Take Quiz)"
+                onPress={() => setQuizVisible(true)}
+                variant="primary"
+                size="small"
+                style={{ alignSelf: 'flex-start' }}
+                icon={<BespokeIcon name="sparkles" size={16} color="#FFFFFF" />}
+              />
+            </View>
+          )}
         </View>
 
-        {/* ── Saved Addresses ── list of delivery addresses */}
+        {/* ── Saved Addresses ── */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <View style={styles.iconCircle}>
               <BespokeIcon name="map-pin" size={18} color={Colors.light.primary} />
             </View>
-            <Text style={styles.sectionTitle}>Saved Addresses</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionTitle}>Saved Delivery Addresses</Text>
+              <Text style={styles.sectionSubtitle}>
+                {profile.addresses.length > 0
+                  ? `${profile.addresses.length} saved address`
+                  : 'No default addresses set'}
+              </Text>
+            </View>
+            {!showAddAddress && (
+              <Pressable
+                onPress={() => setShowAddAddress(true)}
+                hitSlop={8}
+                style={styles.addIconBtn}
+              >
+                <BespokeIcon name="plus" size={16} color={Colors.light.primary} />
+                <Text style={styles.addBtnLabel}>Add</Text>
+              </Pressable>
+            )}
           </View>
 
-          {profile.addresses.map((addr) => (
-            <View key={addr.id} style={styles.addressBox}>
-              <View style={styles.addressTitleRow}>
-                <Text style={styles.addressName}>{addr.fullName}</Text>
-                {/* Show "Default" badge on the pre-selected address */}
-                {addr.isDefault && <Badge label="Default" variant="in-stock" />}
+          {profile.addresses.length > 0 ? (
+            profile.addresses.map((addr) => (
+              <View key={addr.id} style={styles.addressBox}>
+                <View style={styles.addressTitleRow}>
+                  <Text style={styles.addressName}>{addr.fullName}</Text>
+                  {addr.isDefault && <Badge label="Default" variant="in-stock" />}
+                </View>
+                <Text style={styles.addressText}>{addr.street}</Text>
+                <Text style={styles.addressText}>
+                  {addr.city}, {addr.state} - {addr.postalCode}
+                </Text>
+                <Text style={styles.addressPhone}>{addr.phone}</Text>
               </View>
-              <Text style={styles.addressText}>{addr.street}</Text>
-              <Text style={styles.addressText}>
-                {addr.city}, {addr.state} - {addr.postalCode}
+            ))
+          ) : !showAddAddress ? (
+            <View style={styles.emptyCardBox}>
+              <Text style={styles.emptyTitle}>No Delivery Addresses Saved</Text>
+              <Text style={styles.emptySubtext}>
+                Add your delivery destination now or specify it during roastery checkout.
               </Text>
-              <Text style={styles.addressPhone}>{addr.phone}</Text>
+              <CustomButton
+                title="+ Add Delivery Address"
+                onPress={() => setShowAddAddress(true)}
+                variant="outline"
+                size="small"
+                style={{ alignSelf: 'flex-start' }}
+              />
             </View>
-          ))}
+          ) : null}
+
+          {/* Inline Add Address Form */}
+          {showAddAddress && (
+            <View style={styles.addAddressForm}>
+              <Text style={styles.formSectionTitle}>New Delivery Address</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Street Address, Flat, Building"
+                placeholderTextColor={Colors.light.textMuted}
+                value={street}
+                onChangeText={setStreet}
+              />
+              <View style={styles.formRow}>
+                <TextInput
+                  style={[styles.formInput, { flex: 1 }]}
+                  placeholder="City"
+                  placeholderTextColor={Colors.light.textMuted}
+                  value={city}
+                  onChangeText={setCity}
+                />
+                <TextInput
+                  style={[styles.formInput, { flex: 1 }]}
+                  placeholder="PIN Code"
+                  placeholderTextColor={Colors.light.textMuted}
+                  value={postalCode}
+                  onChangeText={setPostalCode}
+                  keyboardType="number-pad"
+                />
+              </View>
+              <TextInput
+                style={styles.formInput}
+                placeholder="State (e.g. Maharashtra)"
+                placeholderTextColor={Colors.light.textMuted}
+                value={stateName}
+                onChangeText={setStateName}
+              />
+              <View style={styles.formBtnRow}>
+                <CustomButton
+                  title="Save Address"
+                  onPress={handleSaveAddress}
+                  variant="primary"
+                  size="small"
+                  style={{ flex: 1 }}
+                />
+                <CustomButton
+                  title="Cancel"
+                  onPress={() => setShowAddAddress(false)}
+                  variant="outline"
+                  size="small"
+                />
+              </View>
+            </View>
+          )}
         </View>
 
         {/* ── Default Grind Preference ── one-click grind setting */}
@@ -145,12 +290,40 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             <View style={styles.iconCircle}>
               <BespokeIcon name="pourover" size={18} color={Colors.light.primary} />
             </View>
-            <Text style={styles.sectionTitle}>Default Roastery Grind</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionTitle}>Default Roastery Grind</Text>
+              <Text style={styles.sectionSubtitle}>
+                {profile.defaultGrindPreference
+                  ? `Active: ${profile.defaultGrindPreference}`
+                  : 'Not selected yet — choose your daily brewing style'}
+              </Text>
+            </View>
           </View>
-          {/* Shows the grind pre-selected on product details screen */}
-          <View style={styles.prefRow}>
-            <Text style={styles.prefKey}>One-Click Grind Setting:</Text>
-            <Text style={styles.prefValue}>{profile.defaultGrindPreference}</Text>
+
+          {/* Selectable Grind Chips */}
+          <View style={styles.chipsContainer}>
+            {AVAILABLE_GRINDS.map((grind) => {
+              const isSelected = profile.defaultGrindPreference === grind;
+              return (
+                <Pressable
+                  key={grind}
+                  onPress={() => setDefaultGrindPreference(grind)}
+                  style={[styles.grindChip, isSelected && styles.grindChipActive]}
+                >
+                  {isSelected && (
+                    <BespokeIcon name="check" size={14} color="#FFFFFF" />
+                  )}
+                  <Text
+                    style={[
+                      styles.grindChipText,
+                      isSelected && styles.grindChipTextActive,
+                    ]}
+                  >
+                    {grind}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
@@ -177,7 +350,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* ── Coffee Quiz Modal ── slides up from bottom when quiz button is tapped */}
+      {/* ── Coffee Quiz Modal ── */}
       <CoffeeQuizModal
         visible={quizVisible}
         onClose={() => setQuizVisible(false)}
@@ -213,7 +386,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.huge,
     gap: Spacing.lg,
   },
-  // Horizontal card: avatar left, details right
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -224,7 +396,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border,
     ...Shadows.soft,
   },
-  // Amber circle avatar
   avatarCircle: {
     width: 64,
     height: 64,
@@ -246,7 +417,6 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     marginBottom: Spacing.xs,
   },
-  // Row: tier badge + points text
   badgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -262,7 +432,6 @@ const styles = StyleSheet.create({
     color: Colors.light.primaryDark,
     fontWeight: '700',
   },
-  // White card used for each section block
   sectionCard: {
     backgroundColor: Colors.light.surface,
     borderRadius: BorderRadius.lg,
@@ -271,20 +440,19 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border,
     ...Shadows.soft,
   },
-  // Icon circle + title row at top of each section
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   iconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.light.primarySubtle,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.light.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: Spacing.sm,
   },
   sectionTitle: {
     ...Typography.titleMedium,
@@ -292,10 +460,9 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     ...Typography.bodySmall,
-    color: Colors.light.textMuted,
-    fontSize: 12,
+    color: Colors.light.textSecondary,
+    marginTop: 2,
   },
-  // Latte cream box holding taste preference rows
   tasteBox: {
     backgroundColor: Colors.light.surfaceElevated,
     borderRadius: BorderRadius.md,
@@ -303,7 +470,6 @@ const styles = StyleSheet.create({
     gap: Spacing.xs + 2,
     marginBottom: Spacing.md,
   },
-  // Each key-value row inside taste box
   tasteRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -321,13 +487,46 @@ const styles = StyleSheet.create({
   quizBtn: {
     alignSelf: 'flex-start',
   },
-  // Address box with subtle border
+  emptyCardBox: {
+    backgroundColor: '#FAF7F2',
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    gap: Spacing.xs,
+  },
+  emptyTitle: {
+    ...Typography.titleSmall,
+    color: Colors.light.textPrimary,
+    fontWeight: '700',
+  },
+  emptySubtext: {
+    ...Typography.bodySmall,
+    color: Colors.light.textSecondary,
+    lineHeight: 18,
+    marginBottom: Spacing.sm,
+  },
+  addIconBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.light.primaryLight,
+    gap: 4,
+  },
+  addBtnLabel: {
+    ...Typography.labelSmall,
+    color: Colors.light.primaryDark,
+    fontWeight: '700',
+  },
   addressBox: {
     backgroundColor: Colors.light.surfaceElevated,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     borderWidth: 1,
     borderColor: Colors.light.border,
+    marginBottom: Spacing.sm,
   },
   addressTitleRow: {
     flexDirection: 'row',
@@ -350,24 +549,69 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: '600',
   },
-  // Single row showing default grind preference
-  prefRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.light.surfaceElevated,
-    padding: Spacing.md,
+  addAddressForm: {
+    backgroundColor: '#FAF7F2',
     borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.light.borderStrong,
+    marginTop: Spacing.sm,
+    gap: Spacing.sm,
   },
-  prefKey: {
-    ...Typography.bodyMedium,
-    color: Colors.light.textSecondary,
-  },
-  prefValue: {
-    ...Typography.bodyMedium,
-    fontWeight: '700',
+  formSectionTitle: {
+    ...Typography.labelSmall,
     color: Colors.light.primaryDark,
+    fontWeight: '700',
+    letterSpacing: 0.8,
   },
-  // Warm parchment about card at the bottom
+  formInput: {
+    backgroundColor: Colors.light.surface,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    ...Typography.bodySmall,
+    color: Colors.light.textPrimary,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  formBtnRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  chipsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  grindChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: Colors.light.borderStrong,
+    backgroundColor: Colors.light.surfaceElevated,
+    gap: 6,
+  },
+  grindChipActive: {
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
+  },
+  grindChipText: {
+    ...Typography.bodySmall,
+    color: Colors.light.textPrimary,
+    fontWeight: '500',
+  },
+  grindChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
   aboutCard: {
     backgroundColor: '#FAF5EE',
     borderRadius: BorderRadius.lg,

@@ -134,7 +134,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
             <View style={styles.incentiveBadge}>
               <BespokeIcon name="sparkles" size={16} color={Colors.light.primary} />
               <Text style={styles.incentiveText}>
-                100 Welcome Bean Rewards + Artisan Bronze Tier
+                Earn Bean Rewards On Every Order • Artisan Bronze Tier
               </Text>
             </View>
           </View>
