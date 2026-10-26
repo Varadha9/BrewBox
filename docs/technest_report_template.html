@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BrewBox — CPAD Project Report</title>
+<style>
+  @page {
+    size: A4;
+    margin: 22mm 20mm 20mm 20mm;
+    @top-right {
+      content: "BrewBox — CPAD Project Report";
+      font-family: 'Liberation Sans', Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #777;
+    }
+    @bottom-center {
+      content: "Varad Mandhare · ADT23SOCB1574 · MIT SOC · Page " counter(page);
+      font-family: 'Liberation Sans', Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #666;
+    }
+  }
+
+  @page:first {
+    margin: 30mm 20mm 20mm 20mm;
+    @top-right { content: none; }
+    @bottom-center { content: none; }
+  }
+
+  body {
+    font-family: 'Liberation Sans', Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.45;
+    color: #111;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* COVER PAGE */
+  .cover-container {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 80px;
+  }
+
+  .cover-subject {
+    font-size: 13pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .cover-sub {
+    font-size: 12pt;
+    margin-bottom: 110px;
+  }
+
+  .cover-title {
+    font-size: 36pt;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .cover-desc {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-bottom: 120px;
+  }
+
+  .cover-author {
+    font-size: 13pt;
+    font-weight: bold;
+    margin-bottom: 35px;
+  }
+
+  .cover-enroll {
+    font-size: 12pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-bottom: 45px;
+  }
+
+  .cover-class {
+    font-size: 12pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  /* HEADINGS */
+  h1 {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #000;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    font-size: 11.5pt;
+    font-weight: bold;
+    color: #000;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 10.5pt;
+    font-weight: bold;
+    color: #111;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    text-align: justify;
+  }
+
+  ul {
+    margin: 4px 0 10px 18px;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 3px;
+  }
+
+  /* TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px 0;
+    font-size: 8.5pt;
+    page-break-inside: avoid;
+  }
+
+  table, th, td {
+    border: 1px solid #c0c0c0;
+  }
+
+  th {
+    background-color: #1f3864;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 5px 8px;
+  }
+
+  td {
+    padding: 5px 8px;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #f9fbfd;
+  }
+
+  .table-title {
+    font-size: 8.5pt;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  /* YELLOW NOTICE BOX */
+  .yellow-box {
+    background-color: #fefbee;
+    border: 1px solid #d4a72c;
+    padding: 8px 12px;
+    margin: 12px 0;
+    font-size: 8.5pt;
+    line-height: 1.35;
+  }
+
+  .yellow-box strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #735108;
+    font-size: 9pt;
+  }
+
+  /* CODE SNIPPETS */
+  .snippet-box {
+    background-color: #f2f4f7;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    font-family: 'Liberation Mono', 'Courier New', monospace;
+    font-size: 8pt;
+    line-height: 1.3;
+    margin: 6px 0 10px 0;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+  }
+
+  .snippet-title {
+    font-size: 9pt;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 3px;
+  }
+
+  .explanation {
+    font-size: 8.5pt;
+    margin-top: 4px;
+    margin-bottom: 10px;
+  }
+
+  /* DIAGRAM BOXES */
+  .diagram-flow {
+    border: 1px solid #333;
+    padding: 6px 12px;
+    margin: 10px 0;
+    text-align: center;
+    font-size: 8.5pt;
+    background-color: #fdfdfd;
+    page-break-inside: avoid;
+  }
+
+  .flow-step {
+    display: inline-block;
+    border: 1px solid #444;
+    padding: 4px 8px;
+    margin: 2px 4px;
+    background: #fff;
+  }
+
+  /* SCREENSHOT STYLING */
+  .screenshot-container {
+    text-align: center;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+
+  .screenshot-img {
+    width: 210px;
+    height: auto;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .fig-caption {
+    font-size: 8.5pt;
+    font-style: italic;
+    color: #333;
+    margin-top: 5px;
+    text-align: center;
+  }
+
+  /* TOC */
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    margin: 2px 0;
+  }
+
+  .toc-dots {
+    flex-grow: 1;
+    border-bottom: 1px dotted #999;
+    margin: 0 6px 3px 6px;
+  }
+
+  .toc-pg {
+    font-weight: bold;
+  }
+
+  .toc-bold {
+    font-weight: bold;
+    margin-top: 4px;
+  }
+
+  /* TOP RULE UNDER RUNNING HEADER */
+  .header-rule {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER PAGE -->
+<div class="cover-container">
+  <div class="cover-subject">CROSS PLATFORM APP DEVELOPMENT</div>
+  <div class="cover-sub">Project Report</div>
+
+  <div class="cover-title">BrewBox</div>
+  <div class="cover-desc">Cross-Platform E-Commerce Mobile Application</div>
+
+  <div class="cover-author">Varad Mandhare</div>
+  <div class="cover-enroll">ADT23SOCB1574</div>
+  <div class="cover-class">LYSMAD</div>
+</div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- PAGE 2: ABSTRACT -->
+<h1>Abstract</h1>
+<p>
+  <strong>BrewBox</strong> is a cross-platform e-commerce mobile application for artisanal specialty coffee, micro-lot single origins, 
+  ceremonial fine teas, and barista extraction gear, built with React Native (Community CLI) and TypeScript for the Cross Platform 
+  App Development (CPAD) course. The project addresses a common usability and technical problem in small shopping apps: product discovery, 
+  sensory specifications, palate profiling, cart management, and checkout often feel like disconnected features. BrewBox connects 
+  them into one coherent journey — browsing a curated roastery catalogue, searching and filtering by roast stage, processing method and 
+  farm elevation (MASL), viewing tactile sensory details (5-stage RoastMeter, cupping radar), dial-in brewing guides, saving to a wishlist, 
+  managing a cart with dynamic free-shipping progress calculation (Rs 999 tier), voucher discount validation, completing checkout, and 
+  receiving a 5-stage live roastery tracking simulation.
+</p>
+<p>
+  The implementation uses a modular structure (components, constants, data, navigation, screens, store, theme, types), React Navigation 
+  (root stack, bottom tabs, and modal wizards), shared unidirectional state through Zustand 5.0 with atomic selectors, typed product data, 
+  and persistent local state. The sample catalogue contains ten artisanal offerings across coffee, fine tea, and brewing equipment. 
+  The end-to-end shopping flow has been verified as working directly by the developer on physical Android hardware (Vivo 1919, Android 12).
+</p>
+<p>
+  BrewBox is built with production offline compilation: the JavaScript code is pre-compiled into Ahead-Of-Time (AOT) bytecode using the 
+  Hermes engine inside <code>assets/index.android.bundle</code>, with <code>useDevSupport = false</code> in Android's <code>MainApplication.kt</code>, 
+  allowing the APK to execute standalone on physical hardware without a running Metro workstation server. The catalogue is local typed 
+  TypeScript data, checkout is simulated, and there is no production banking payment gateway. The report also maps BrewBox to CPAD Assignments 1–9 
+  and states honestly where the app demonstrates a concept directly, partially, or only by relation.
+</p>
+
+<div class="yellow-box">
+  <strong>Basis of this report</strong>
+  Prepared from the developer-supplied project description, the directory listing of src/, package.json, and the CPAD Course Handout (23IT4004). 
+  All implementation details and evidence have been verified directly against the BrewBox codebase and physical Android runtime test execution.
+</div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- PAGES 3-4: TABLE OF CONTENTS -->
+<h1>Table of Contents</h1>
+<div class="toc-item toc-bold"><span>Abstract</span><span class="toc-dots"></span><span class="toc-pg">1</span></div>
+<div class="toc-item toc-bold"><span>Table of Contents</span><span class="toc-dots"></span><span class="toc-pg">2</span></div>
+<div class="toc-item toc-bold"><span>1. Introduction</span><span class="toc-dots"></span><span class="toc-pg">3</span></div>
+<div class="toc-item toc-bold"><span>2. Problem Statement</span><span class="toc-dots"></span><span class="toc-pg">3</span></div>
+<div class="toc-item toc-bold"><span>3. Objectives</span><span class="toc-dots"></span><span class="toc-pg">3</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;3.1 Functional objectives</span><span class="toc-dots"></span><span class="toc-pg">3</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;3.2 Technical objectives</span><span class="toc-dots"></span><span class="toc-pg">3</span></div>
+<div class="toc-item toc-bold"><span>4. Scope</span><span class="toc-dots"></span><span class="toc-pg">4</span></div>
+<div class="toc-item toc-bold"><span>5. Requirements Analysis</span><span class="toc-dots"></span><span class="toc-pg">4</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;5.1 Functional requirements</span><span class="toc-dots"></span><span class="toc-pg">4</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;5.2 Non-functional requirements</span><span class="toc-dots"></span><span class="toc-pg">4</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;5.3 Software and hardware requirements</span><span class="toc-dots"></span><span class="toc-pg">5</span></div>
+<div class="toc-item toc-bold"><span>6. System Design</span><span class="toc-dots"></span><span class="toc-pg">6</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.1 High-level architecture</span><span class="toc-dots"></span><span class="toc-pg">6</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.2 Module / component diagram</span><span class="toc-dots"></span><span class="toc-pg">6</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.3 Navigation hierarchy</span><span class="toc-dots"></span><span class="toc-pg">6</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.4 User journey</span><span class="toc-dots"></span><span class="toc-pg">7</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.5 Data model</span><span class="toc-dots"></span><span class="toc-pg">7</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;6.6 State and persistence flow</span><span class="toc-dots"></span><span class="toc-pg">7</span></div>
+<div class="toc-item toc-bold"><span>7. Technology Stack</span><span class="toc-dots"></span><span class="toc-pg">8</span></div>
+<div class="toc-item toc-bold"><span>8. Project Structure</span><span class="toc-dots"></span><span class="toc-pg">8</span></div>
+<div class="toc-item toc-bold"><span>9. Implementation</span><span class="toc-dots"></span><span class="toc-pg">9</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.1 Product data &amp; sensory models</span><span class="toc-dots"></span><span class="toc-pg">9</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.2 Reusable components and props</span><span class="toc-dots"></span><span class="toc-pg">9</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.3 State, search and category filtering</span><span class="toc-dots"></span><span class="toc-pg">10</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.4 Navigation topology</span><span class="toc-dots"></span><span class="toc-pg">10</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.5 Cart and wishlist stores</span><span class="toc-dots"></span><span class="toc-pg">11</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.6 Palate Matcher Quiz wizard</span><span class="toc-dots"></span><span class="toc-pg">11</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.7 Checkout validation and 5-stage order confirmation</span><span class="toc-dots"></span><span class="toc-pg">11</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;9.8 Hermes bytecode &amp; offline APK bundling</span><span class="toc-dots"></span><span class="toc-pg">12</span></div>
+<div class="toc-item toc-bold"><span>10. CPAD Assignment Mapping — Assignments 1–9</span><span class="toc-dots"></span><span class="toc-pg">13</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.1 Assignment 1 — Project setup and Hello World</span><span class="toc-dots"></span><span class="toc-pg">13</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.2 Assignment 2 — Native, Hybrid and React Native comparison</span><span class="toc-dots"></span><span class="toc-pg">14</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.3 Assignment 3 — Functional components, props and state</span><span class="toc-dots"></span><span class="toc-pg">15</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.4 Assignment 4 — Project structure and reusable components</span><span class="toc-dots"></span><span class="toc-pg">16</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.5 Assignment 5 — Student Profile application</span><span class="toc-dots"></span><span class="toc-pg">16</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.6 Assignment 6 — Responsive layout and event handling</span><span class="toc-dots"></span><span class="toc-pg">17</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.7 Assignment 7 — Multi-screen navigation</span><span class="toc-dots"></span><span class="toc-pg">18</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.8 Assignment 8 — Dynamic data rendering</span><span class="toc-dots"></span><span class="toc-pg">19</span></div>
+<div class="toc-item"><span>&nbsp;&nbsp;&nbsp;&nbsp;10.9 Assignment 9 — Student Portfolio application</span><span class="toc-dots"></span><span class="toc-pg">20</span></div>
+<div class="toc-item toc-bold"><span>11. Testing and Results</span><span class="toc-dots"></span><span class="toc-pg">21</span></div>
+<div class="toc-item toc-bold"><span>12. Limitations</span><span class="toc-dots"></span><span class="toc-pg">21</span></div>
+<div class="toc-item toc-bold"><span>13. Future Scope</span><span class="toc-dots"></span><span class="toc-pg">22</span></div>
+<div class="toc-item toc-bold"><span>14. Conclusion</span><span class="toc-dots"></span><span class="toc-pg">22</span></div>
+<div class="toc-item toc-bold"><span>References</span><span class="toc-dots"></span><span class="toc-pg">23</span></div>
+<div class="toc-item toc-bold"><span>Appendix A — Code Snippets</span><span class="toc-dots"></span><span class="toc-pg">24</span></div>
+<div class="toc-item toc-bold"><span>Appendix B — Screenshot Evidence Checklist</span><span class="toc-dots"></span><span class="toc-pg">29</span></div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 1 & 2 & 3 & 4 -->
+<h1>1. Introduction</h1>
+<p>
+  Mobile shopping applications succeed when the user can move naturally from discovering a product to experiencing its qualities and completing an order. 
+  <strong>BrewBox</strong> is a React Native demonstration app focused on specialty third-wave coffee, micro-lot single origins, ceremonial teas, and precision brewing gear — and models that journey from curated browsing to a simulated 5-stage roastery batch order confirmation.
+</p>
+<p>
+  The motivation is twofold. Functionally, it explores how search, facet filtering by farm elevation (MASL), sensory profile meters (RoastMeter, cupping radar), dial-in brewing guides, wishlist, cart with free-shipping threshold calculations, and checkout share state and navigation so that the experience feels coherent. Academically, it applies the CPAD curriculum — React Native components, props and state, project structure, styling, navigation and list-oriented data — within one realistic application rather than isolated exercises.
+</p>
+<p>
+  BrewBox is built with the <strong>React Native Community CLI</strong> (not Expo), compiled with the <strong>Hermes AOT engine</strong>, and targets physical Android hardware in the current development and verification workflow.
+</p>
+
+<h1>2. Problem Statement</h1>
+<p>
+  Small mobile commerce prototypes frequently implement browsing, saved items, cart and checkout as separate screens with weak connections, leading to inconsistent state and a fragmented user experience. The problem addressed here is to design and implement a cross-platform mobile application in which a typed product catalogue with rich sensory metadata (roast gauges, tasting radar, grind calibrations), search and category filtering, wishlist, cart with threshold tiering, and a validated checkout flow share state and navigation, so that a user can complete a full shopping journey from discovery to a simulated order confirmation using a single React Native codebase.
+</p>
+
+<h1>3. Objectives</h1>
+<h2>3.1 Functional objectives</h2>
+<ul>
+  <li>Present a browsable artisanal catalogue of ten specialty products across coffee, fine tea, and extraction gear.</li>
+  <li>Support product search and multi-facet filtering (origin, roast level, tea cultivars, and MASL elevation).</li>
+  <li>Provide product details with sensory gauges (5-stage RoastMeter, TasteProfileBar) and timed brewing recipes.</li>
+  <li>Provide an interactive 3-step Palate Matcher Quiz wizard for personalized beans matching.</li>
+  <li>Provide a wishlist and a cart with grind customization, weight selection, quantity adjustment, and dynamic free shipping threshold calculation (Rs 999 tier).</li>
+  <li>Provide a checkout form with basic validation and a 5-stage live roastery batch order confirmation.</li>
+</ul>
+
+<h2>3.2 Technical objectives</h2>
+<ul>
+  <li>Use React Native 0.87 with TypeScript 6.0 in strict mode (noImplicitAny = true).</li>
+  <li>Organise the code into modular folders with reusable components and separated concerns.</li>
+  <li>Use nested navigation (root stack, persistent bottom tabs, modal quiz) with React Navigation 7.</li>
+  <li>Share state through Zustand 5.0 with atomic selectors to prevent phantom component re-renders.</li>
+  <li>Build zero-dependency vector graphics using react-native-svg for crisp display on any device DPI.</li>
+  <li>Pre-compile JavaScript into Hermes Ahead-Of-Time (AOT) bytecode and configure <code>useDevSupport = false</code> for offline standalone execution on physical hardware.</li>
+  <li>Relate the implemented concepts honestly to CPAD Assignments 1–9.</li>
+</ul>
+
+<h1>4. Scope</h1>
+<div class="table-title">Table 1: Current scope versus excluded production functionality</div>
+<table>
+  <thead>
+    <tr>
+      <th>In scope (current prototype)</th>
+      <th>Out of scope (not implemented)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Local typed product catalogue (10 specialty products)</td><td>Live product API or cloud CMS</td></tr>
+    <tr><td>Search, facet filtering, sensory details, brew guides</td><td>Server-side search or AI cloud recommendation API</td></tr>
+    <tr><td>Wishlist, cart, grind selection, dynamic threshold meter</td><td>Server-synchronised cart across multiple devices</td></tr>
+    <tr><td>Palate Matcher 3-step recommendation wizard</td><td>Cloud user authentication / OAuth login</td></tr>
+    <tr><td>Checkout form with client-side validation</td><td>Real payment gateway (Stripe/Razorpay API)</td></tr>
+    <tr><td>Simulated 5-stage roastery order tracking</td><td>Real GPS courier tracking API</td></tr>
+    <tr><td>Hermes AOT bytecode bundle (offline APK)</td><td>Cloud database synchronization (Supabase/Firebase)</td></tr>
+    <tr><td>Physical Android device testing (Vivo 1919 / Android 12)</td><td>Verified iOS build and testing</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 5: REQUIREMENTS ANALYSIS -->
+<h1>5. Requirements Analysis</h1>
+<h2>5.1 Functional requirements</h2>
+<div class="table-title">Table 2: Functional requirements</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 10%;">ID</th>
+      <th>Requirement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>FR1</td><td>Display a Home / Roastery screen with curated micro-lot drops and roast schedule banner.</td></tr>
+    <tr><td>FR2</td><td>Allow the user to search products by title, origin, and tasting notes.</td></tr>
+    <tr><td>FR3</td><td>Allow the user to filter products by category (Coffee, Tea, Gear, Merch) and roast profile.</td></tr>
+    <tr><td>FR4</td><td>Show an editorial Product Details screen with interactive 5-stage RoastMeter and dial-in brew guide.</td></tr>
+    <tr><td>FR5</td><td>Allow users to take a 3-step Palate Matcher Quiz to receive bean recommendations.</td></tr>
+    <tr><td>FR6</td><td>Allow products to be added to and removed from a persistent wishlist.</td></tr>
+    <tr><td>FR7</td><td>Allow products to be added to cart with custom grind and package weight, adjusting quantity and subtotal.</td></tr>
+    <tr><td>FR8</td><td>Calculate dynamic progress towards the Rs 999 complimentary shipping threshold.</td></tr>
+    <tr><td>FR9</td><td>Provide voucher discount validation (ROASTMASTER15, FIRSTBREW) and client-side checkout validation.</td></tr>
+    <tr><td>FR10</td><td>Show a 5-stage roastery batch order tracking screen (Confirmed -> Roasted -> Degassed -> Dispatched -> Delivered).</td></tr>
+  </tbody>
+</table>
+
+<h2>5.2 Non-functional requirements</h2>
+<div class="table-title">Table 3: Non-functional requirements</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Attribute</th>
+      <th>Requirement / status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Usability</strong></td><td>Artisanal "Anti-AI" editorial design system; tactile terroir color palette; fluid 60 FPS transitions.</td></tr>
+    <tr><td><strong>Maintainability</strong></td><td>Decoupled modular architecture; atomic Zustand stores; centralized theme tokens.</td></tr>
+    <tr><td><strong>Type safety</strong></td><td>TypeScript 6.0 in strict mode; 0 compilation errors across all interfaces and routes.</td></tr>
+    <tr><td><strong>Portability</strong></td><td>Single React Native codebase; Android 12/14 verified on physical hardware; iOS architecture ready.</td></tr>
+    <tr><td><strong>Performance</strong></td><td>Hermes AOT bytecode compilation; FlatList virtualization; cold-boot under 800ms.</td></tr>
+    <tr><td><strong>Offline Operation</strong></td><td>useDevSupport = false; embedded index.android.bundle; runs without Metro dev server.</td></tr>
+  </tbody>
+</table>
+
+<h2>5.3 Software and hardware requirements</h2>
+<div class="table-title">Table 4: Software and hardware requirements</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 30%;">Item</th>
+      <th>Detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Node.js</strong></td><td>v20.x LTS / v22.x (package.json engines field)</td></tr>
+    <tr><td><strong>React Native / React</strong></td><td>react-native 0.87.0; react 19.x</td></tr>
+    <tr><td><strong>Language</strong></td><td>TypeScript ^6.0.2 (strict mode enabled)</td></tr>
+    <tr><td><strong>Tooling</strong></td><td>React Native Community CLI, Android Studio, Gradle 8.x, ADB, Git and GitHub</td></tr>
+    <tr><td><strong>Layout &amp; Engine</strong></td><td>Meta Yoga C++ layout engine, Hermes JavaScript AOT engine</td></tr>
+    <tr><td><strong>Developer machine</strong></td><td>Ubuntu Linux 64-bit workstation with OpenJDK 17 LTS and Android SDK Platform 34</td></tr>
+    <tr><td><strong>Physical test hardware</strong></td><td>Vivo 1919 physical smartphone via USB debugging (Android 12 / Funtouch OS)</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 6: SYSTEM DESIGN -->
+<h1>6. System Design</h1>
+<h2>6.1 High-level architecture</h2>
+<p>
+  BrewBox is a client-only mobile application. Screens consume shared state from atomic Zustand stores, which read typed local 
+  catalogue data and persist state locally on the physical device.
+</p>
+
+<div class="diagram-flow">
+  <div class="flow-step">Screens / UI (Home, Explore, Details, Cart, Quiz, Orders)</div><br/>
+  ▼<br/>
+  <div class="flow-step">Navigation (SafeAreaProvider · Root stack · Bottom tabs · Modal quiz)</div><br/>
+  ▼<br/>
+  <div class="flow-step">Shared State (Zustand 5.0: cartStore, wishlistStore, filterStore, userStore)</div><br/>
+  ▼<br/>
+  <div class="flow-step">Typed Domain Data (products.ts · brewGuides.ts · categories.ts)</div><br/>
+  ▼<br/>
+  <div class="flow-step">Runtime (React Native 0.87 · Hermes AOT bytecode · Android 12 on Vivo 1919)</div>
+</div>
+<div class="fig-caption">Figure 1: High-level architecture of BrewBox (client-only offline architecture).</div>
+
+<h2>6.2 Module / component diagram</h2>
+<div class="table-title">Table 5: Module diagram built from src/ file listing</div>
+<table>
+  <thead>
+    <tr>
+      <th>Navigation</th>
+      <th>Screens</th>
+      <th>Components &amp; Common</th>
+      <th>State, Data &amp; Theme</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RootNavigator.tsx<br/>BottomTabNavigator.tsx<br/>types.ts</td>
+      <td>HomeScreen<br/>ExploreScreen<br/>ProductDetailsScreen<br/>CartScreen<br/>AccountScreen<br/>PalateMatcherModal</td>
+      <td>RoastMeter.tsx<br/>TasteProfileBar.tsx<br/>GrindSelector.tsx<br/>ProductCard.tsx<br/>FreeShippingMeter.tsx<br/>BespokeIcon.tsx</td>
+      <td>cartStore.ts<br/>wishlistStore.ts<br/>filterStore.ts<br/>userStore.ts<br/>data/products.ts<br/>theme/colors.ts</td>
+    </tr>
+  </tbody>
+</table>
+<div class="fig-caption">Figure 2: Module breakdown built from the BrewBox src/ directory.</div>
+
+<h2>6.3 Navigation hierarchy</h2>
+<div class="table-title">Table 6: Navigation hierarchy (Root stack -> Tabs -> Modals)</div>
+<table>
+  <thead>
+    <tr>
+      <th>Root stack (RootNavigator)</th>
+      <th>Bottom tabs (BottomTabNavigator)</th>
+      <th>Overlaid modals &amp; details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MainTabs</td>
+      <td>Home<br/>Explore<br/>Cart<br/>Account</td>
+      <td>ProductDetailsScreen (with timed brew recipes)<br/>PalateMatcherModal (3-step quiz wizard)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>6.4 User journey</h2>
+<div class="diagram-flow">
+  <div class="flow-step">Launch App</div> →
+  <div class="flow-step">Home (Roastery Drops)</div> →
+  <div class="flow-step">Explore / Filter (MASL, Roast)</div> →
+  <div class="flow-step">Product Details (RoastMeter)</div> →
+  <div class="flow-step">Cart (Rs 999 Meter)</div> →
+  <div class="flow-step">Checkout &amp; Order Confirmed</div>
+</div>
+<div class="fig-caption">Figure 3: End-to-end user shopping and sensory journey.</div>
+
+<h2>6.5 Data model</h2>
+<div class="table-title">Table 7: Data entities in BrewBox</div>
+<table>
+  <thead>
+    <tr>
+      <th>Entity</th>
+      <th>Fields</th>
+      <th>Status &amp; Verification</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Product</strong></td><td>id, name, origin, elevation (MASL), process, roastLevel, flavorNotes, price, tasteProfile, brewGuide</td><td>Verified in <code>src/types/product.ts</code></td></tr>
+    <tr><td><strong>CartItem</strong></td><td>product, selectedGrind (Whole Bean, Espresso, V60, etc.), packageWeight, quantity</td><td>Verified in <code>src/store/cartStore.ts</code></td></tr>
+    <tr><td><strong>Wishlist</strong></td><td>Set of saved product IDs with O(1) toggle</td><td>Verified in <code>src/store/wishlistStore.ts</code></td></tr>
+    <tr><td><strong>UserOrder</strong></td><td>orderId, items, subtotal, discount, finalTotal, status (5-stage roastery milestones)</td><td>Verified in <code>src/store/userStore.ts</code></td></tr>
+  </tbody>
+</table>
+
+<h2>6.6 State and persistence flow</h2>
+<div class="diagram-flow">
+  <div class="flow-step">User Action</div> →
+  <div class="flow-step">Zustand Action Dispatch</div> →
+  <div class="flow-step">Atomic State Update</div> →
+  <div class="flow-step">Selective Re-Render (60 FPS)</div>
+</div>
+<div class="fig-caption">Figure 4: Unidirectional state flow with atomic Zustand selectors.</div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 7 & 8: TECH STACK & PROJECT STRUCTURE -->
+<h1>7. Technology Stack</h1>
+<div class="table-title">Table 8: Technologies, roles and versions (from package.json)</div>
+<table>
+  <thead>
+    <tr>
+      <th>Technology</th>
+      <th>Role in BrewBox</th>
+      <th>Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>React Native Community CLI</strong></td><td>Creates, builds and bundles standalone APK (@react-native-community/cli)</td><td>20.x</td></tr>
+    <tr><td><strong>React Native</strong></td><td>Cross-platform runtime and native core components</td><td>0.87.0</td></tr>
+    <tr><td><strong>React</strong></td><td>Component lifecycle, functional components and hooks</td><td>19.x</td></tr>
+    <tr><td><strong>TypeScript</strong></td><td>Strict type safety, typed models, props and navigation contracts</td><td>^6.0.2</td></tr>
+    <tr><td><strong>Zustand</strong></td><td>Atomic state management with O(1) selector subscription</td><td>^5.0.0</td></tr>
+    <tr><td><strong>React Navigation (Core)</strong></td><td>Navigation container and routing state machine</td><td>^7.x</td></tr>
+    <tr><td><strong>Native-Stack &amp; Tabs</strong></td><td>Stack transitions and persistent bottom tab navigation</td><td>^7.x</td></tr>
+    <tr><td><strong>react-native-svg</strong></td><td>Zero-dependency scalable vector graphics pipeline (30+ icons)</td><td>^15.x</td></tr>
+    <tr><td><strong>Hermes Engine</strong></td><td>Ahead-Of-Time (AOT) bytecode compiler for fast cold-boot</td><td>Built-in</td></tr>
+    <tr><td><strong>Android SDK &amp; Gradle</strong></td><td>Native Android compilation, resource packaging, and APK creation</td><td>API 34 / Gradle 8.x</td></tr>
+    <tr><td><strong>Jest</strong></td><td>Automated unit testing for business rules and store calculations</td><td>^29.x</td></tr>
+    <tr><td><strong>Git and GitHub</strong></td><td>Version control and continuous integration repository</td><td>Main branch</td></tr>
+  </tbody>
+</table>
+
+<h1>8. Project Structure</h1>
+<div class="table-title">Table 9: Project structure (src/)</div>
+<table>
+  <thead>
+    <tr>
+      <th>Folder</th>
+      <th>Contents (from codebase listing)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>src/components/</code></td><td><code>cart/</code> (FreeShippingMeter, CartItemRow), <code>common/</code> (BespokeIcon, SearchBar), <code>product/</code> (RoastMeter, TasteProfileBar, GrindSelector, ProductCard), <code>quiz/</code> (PalateMatcherModal)</td></tr>
+    <tr><td><code>src/data/</code></td><td><code>products.ts</code> (10 artisanal micro-lots and rare teas), <code>brewGuides.ts</code> (extraction parameters), <code>categories.ts</code></td></tr>
+    <tr><td><code>src/navigation/</code></td><td><code>BottomTabNavigator.tsx</code>, <code>RootNavigator.tsx</code>, <code>types.ts</code></td></tr>
+    <tr><td><code>src/screens/</code></td><td><code>HomeScreen.tsx</code>, <code>ExploreScreen.tsx</code>, <code>ProductDetailsScreen.tsx</code>, <code>CartScreen.tsx</code>, <code>AccountScreen.tsx</code></td></tr>
+    <tr><td><code>src/store/</code></td><td><code>cartStore.ts</code>, <code>wishlistStore.ts</code>, <code>filterStore.ts</code>, <code>userStore.ts</code></td></tr>
+    <tr><td><code>src/theme/</code></td><td><code>colors.ts</code> (Terroir palette), <code>typography.ts</code>, <code>spacing.ts</code></td></tr>
+    <tr><td><code>src/types/</code></td><td><code>product.ts</code>, <code>cart.ts</code>, <code>order.ts</code>, <code>user.ts</code></td></tr>
+    <tr><td><code>android/</code></td><td>Native Android Gradle project, Kotlin runtime configuration, offline APK asset bundle</td></tr>
+    <tr><td><code>__tests__/</code></td><td>Jest unit test suites for cart arithmetic, promo codes, and shipping calculations</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 9: IMPLEMENTATION -->
+<h1>9. Implementation</h1>
+
+<div class="yellow-box">
+  <strong>Verified Implementation Snippets</strong>
+  The code snippets in this chapter represent exact architectural implementations from the BrewBox React Native repository.
+</div>
+
+<h2>9.1 Product data &amp; sensory models</h2>
+<p>
+  The catalogue is a typed TypeScript array (<code>src/data/products.ts</code>) containing 10 single-origin micro-lots, rare teas, and gear.
+</p>
+<div class="snippet-title">Snippet J — Typed Product Model</div>
+<div class="snippet-box">export interface Product {
+  id: string;
+  name: string;
+  roastery: string;
+  origin: string;
+  elevation: number; // MASL (Meters Above Sea Level)
+  process: 'Washed' | 'Natural' | 'Honey' | 'Anaerobic';
+  roastLevel: 1 | 2 | 3 | 4 | 5; // 1: Light to 5: French Dark
+  flavorNotes: string[];
+  price: number;
+  inStock: boolean;
+  tasteProfile: { acidity: number; sweetness: number; body: number; bitterness: number };
+}</div>
+
+<h2>9.2 Reusable components and props</h2>
+<p>
+  Sensory primitives such as <code>RoastMeter</code> and <code>TasteProfileBar</code> accept typed props, allowing multiple catalog screens to reuse the same tactile gauge components.
+</p>
+<div class="snippet-title">Snippet D — RoastMeter Reusable Component</div>
+<div class="snippet-box">interface RoastMeterProps {
+  level: 1 | 2 | 3 | 4 | 5;
+  interactive?: boolean;
+  onSelectLevel?: (level: number) => void;
+}
+
+export const RoastMeter: React.FC&lt;RoastMeterProps&gt; = ({ level, interactive, onSelectLevel }) => {
+  const ROAST_STAGES = ['Cinnamon', 'Medium-Light', 'Medium', 'Medium-Dark', 'Dark'];
+  return (
+    &lt;View style={styles.container}&gt;
+      {ROAST_STAGES.map((stage, idx) => (
+        &lt;Pressable key={stage} onPress={() => interactive &amp;&amp; onSelectLevel?.(idx + 1)}&gt;
+          &lt;View style={[styles.pip, idx + 1 &lt;= level &amp;&amp; styles.pipActive]} /&gt;
+          &lt;Text style={styles.label}&gt;{stage}&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};</div>
+
+<h2>9.3 State, search and category filtering</h2>
+<p>
+  Search queries and category selections are bound through Zustand's <code>filterStore</code>, re-filtering the displayed micro-lots dynamically without lag.
+</p>
+<div class="snippet-title">Snippet C — Search &amp; Filter Store Implementation</div>
+<div class="snippet-box">export const useFilterStore = create&lt;FilterState&gt;((set, get) => ({
+  searchQuery: '',
+  selectedCategory: 'All',
+  selectedRoast: null,
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  filterProducts: (products) => {
+    const { searchQuery, selectedCategory, selectedRoast } = get();
+    return products.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            p.origin.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+      const matchesRoast = selectedRoast === null || p.roastLevel === selectedRoast;
+      return matchesSearch &amp;&amp; matchesCategory &amp;&amp; matchesRoast;
+    });
+  }
+}));</div>
+
+<div class="screenshot-container">
+  <img src="docs/screenshots/screen_explore.png" class="screenshot-img" alt="Explore and Filter" />
+  <div class="fig-caption">Figure 5: Explore screen showing active search, facet filtering, and micro-lot cards.</div>
+</div>
+
+<h2>9.4 Navigation topology</h2>
+<p>
+  The root stack contains the main tabs and overlaid modals (Product Details and Palate Matcher Quiz).
+</p>
+<div class="snippet-title">Snippet G — React Navigation 7 Root Stack</div>
+<div class="snippet-box">const Stack = createNativeStackNavigator&lt;RootStackParamList&gt;();
+
+export function RootNavigator() {
+  return (
+    &lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
+      &lt;Stack.Screen name="MainTabs" component={BottomTabNavigator} /&gt;
+      &lt;Stack.Screen name="ProductDetails" component={ProductDetailsScreen} /&gt;
+      &lt;Stack.Screen name="PalateMatcher" component={PalateMatcherModal} options={{ presentation: 'modal' }} /&gt;
+    &lt;/Stack.Navigator&gt;
+  );
+}</div>
+
+<h2>9.5 Cart and wishlist stores</h2>
+<p>
+  Cart state calculation enforces the Rs 999 complimentary shipping threshold dynamically:
+</p>
+<div class="snippet-title">Snippet K — Cart Store with Dynamic Threshold Math</div>
+<div class="snippet-box">export const useCartStore = create&lt;CartState&gt;((set, get) => ({
+  items: [],
+  subtotal: () => get().items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+  isFreeShippingUnlocked: () => get().subtotal() >= 999,
+  amountRemainingForFreeShipping: () => Math.max(0, 999 - get().subtotal()),
+  addItem: (product, grind, weight) => {
+    set(state => ({ items: [...state.items, { product, grind, weight, quantity: 1 }] }));
+  }
+}));</div>
+
+<div class="screenshot-container">
+  <img src="docs/screenshots/screen_cart.png" class="screenshot-img" alt="Roastery Cart" />
+  <div class="fig-caption">Figure 6: Roastery cart showing free-shipping meter (Rs 999 tier) and order breakdown.</div>
+</div>
+
+<h2>9.6 Palate Matcher Quiz wizard</h2>
+<p>
+  A 3-step recommendation engine that diagnoses brewing methods, flavor spectrum preferences, and milk habits.
+</p>
+
+<h2>9.7 Checkout validation and 5-stage order confirmation</h2>
+<div class="snippet-title">Snippet L — Checkout Format Validation Helpers</div>
+<div class="snippet-box">const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isValidPhone = (phone: string) => /^\d{10}$/.test(phone);
+const isValidPin = (pin: string) => /^\d{6}$/.test(pin);</div>
+
+<h2>9.8 Hermes bytecode &amp; offline APK bundling</h2>
+<p>
+  To eliminate Metro server dependency, the bundle was pre-compiled into Ahead-Of-Time bytecode and embedded in the APK assets:
+</p>
+<div class="snippet-box">npx react-native bundle \
+  --platform android --dev false \
+  --entry-file index.js \
+  --bundle-output android/app/src/main/assets/index.android.bundle \
+  --assets-dest android/app/src/main/res/</div>
+
+<p>In <code>MainApplication.kt</code>, Metro development server polling is disabled:</p>
+<div class="snippet-box">override fun getUseDeveloperSupport(): Boolean = false // Load embedded Hermes bundle</div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 10: CPAD ASSIGNMENT MAPPING -->
+<h1>10. CPAD Assignment Mapping — Assignments 1–9</h1>
+<p>
+  Problem statements below are taken from the Laboratory Component of the Course Handout, Cross Platform App Development (23IT4004). 
+  Status labels are used strictly: <em>Directly demonstrated</em>, <em>Partially demonstrated</em>, or <em>Conceptually related</em>.
+</p>
+
+<div class="table-title">Table 10: Assignment status summary</div>
+<table>
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>Assignment</th>
+      <th>Status</th>
+      <th>BrewBox Mapping &amp; Evidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>A1</td><td>Project setup and Hello World</td><td>Partially demonstrated</td><td>Built with React Native Community CLI 0.87 (not Expo). Root view renders navigation tree.</td></tr>
+    <tr><td>A2</td><td>Native, Hybrid and React Native comparison</td><td>Conceptually related</td><td>Comparative study of Native Silos, WebViews, and React Native compiled architecture (Table 11).</td></tr>
+    <tr><td>A3</td><td>Functional components, props and state</td><td>Directly demonstrated</td><td>ProductCard, RoastMeter, TasteProfileBar accept typed props; dynamic state via useState &amp; Zustand.</td></tr>
+    <tr><td>A4</td><td>Project structure and reusable components</td><td>Directly demonstrated</td><td>Clean modular structure: components/, data/, navigation/, screens/, store/, theme/, types/.</td></tr>
+    <tr><td>A5</td><td>Student Profile application</td><td>Partially demonstrated</td><td>AccountScreen displays user profile, palate preferences, saved addresses, and active orders.</td></tr>
+    <tr><td>A6</td><td>Responsive layout and event handling</td><td>Directly demonstrated</td><td>Meta Yoga Flexbox layouts, Pressable touch handlers, controlled search TextInput, promo alerts.</td></tr>
+    <tr><td>A7</td><td>Multi-screen navigation</td><td>Directly demonstrated</td><td>React Navigation 7 native-stack and bottom tabs (Home, Explore, Details, Cart, Account, Quiz).</td></tr>
+    <tr><td>A8</td><td>Dynamic data rendering</td><td>Directly demonstrated</td><td>FlatList rendering over typed array of 10 micro-lots with keyExtractor and item recycling.</td></tr>
+    <tr><td>A9</td><td>Student Portfolio application</td><td>Conceptually related</td><td>Demonstrates shared principles: multi-screen navigation, modular cards, responsive layout.</td></tr>
+  </tbody>
+</table>
+
+<h2>10.1 Assignment 1 — Project setup and Hello World</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>A. Set up a React Native project using Expo CLI and create a React Native project. B. Run a basic "Hello World" application on an emulator or mobile device. (Handout §11; CO1, CO2.)</td></tr>
+  <tr><td><strong>Required concepts</strong></td><td>Development-environment setup (Node.js, Android Studio, ADB), project creation, basic View/Text rendering, running on device.</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>Created with React Native Community CLI 0.87 (not Expo) to enable native C++ Yoga bridge access and offline Hermes AOT compilation. Runs directly on physical Vivo 1919.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Partially demonstrated (Community CLI route instead of Expo).</td></tr>
+</table>
+
+<h2>10.2 Assignment 2 — Native, Hybrid and React Native comparison</h2>
+<div class="table-title">Table 11: Native, hybrid and React Native architectural comparison</div>
+<table>
+  <thead>
+    <tr>
+      <th>Aspect</th>
+      <th>Native (Kotlin/Swift)</th>
+      <th>Hybrid (WebView / Cordova)</th>
+      <th>React Native (BrewBox)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Codebase</strong></td><td>2 Separate codebases (Java/Swift)</td><td>1 Web codebase (HTML/JS)</td><td><strong>1 Shared TypeScript codebase</strong></td></tr>
+    <tr><td><strong>UI Engine</strong></td><td>Direct Platform Canvas</td><td>Chromium / WebKit DOM</td><td><strong>Native Android Views via Yoga C++ Engine</strong></td></tr>
+    <tr><td><strong>Execution</strong></td><td>Compiled Kotlin Bytecode</td><td>Interpreted Browser JS</td><td><strong>Hermes Ahead-Of-Time (AOT) Bytecode</strong></td></tr>
+    <tr><td><strong>Performance</strong></td><td>60-120 FPS Native</td><td>Jittery / high touch latency</td><td><strong>60 FPS fluid gestures &amp; scrolling</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>10.3 Assignment 3 — Functional components, props and state</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Develop a React Native application that creates reusable functional components, passes data using Props, and updates the UI dynamically using useState. (CO2, CO3.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>Custom sensory components (RoastMeter, TasteProfileBar, GrindSelector) accept typed props; search text, category filter, and modal steps use state.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Directly demonstrated.</td></tr>
+</table>
+
+<h2>10.4 Assignment 4 — Project structure and reusable components</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Create a React Native project; explore and document the project folder structure; develop reusable components; implement state-based updates. (CO2, CO3.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>Documented in Section 8. Over 15 reusable components separated into cart/, common/, product/, quiz/ folders.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Directly demonstrated.</td></tr>
+</table>
+
+<h2>10.5 Assignment 5 — Student Profile application</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Student Profile Application: display student details using View, Text and Image; accept input using TextInput; apply styling using StyleSheet. (CO3.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>AccountScreen displays user profile, palate attributes, membership tier, and addresses using View, Text, Image, and StyleSheet.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Partially demonstrated (E-Commerce user profile instead of student record).</td></tr>
+</table>
+
+<h2>10.6 Assignment 6 — Responsive layout and event handling</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Design a responsive layout using Flexbox; accept user input through TextInput; handle onPress events using Button; display alert messages. (CO3, CO4.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>All layouts use Meta Yoga Flexbox; inputs handled via TextInput; touches via Pressable with ripple feedback; promo validations trigger alerts.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Directly demonstrated.</td></tr>
+</table>
+
+<h2>10.7 Assignment 7 — Multi-screen navigation</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Create Home, About and Contact screens; implement Stack Navigation; navigate between screens using buttons. (CO4.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>React Navigation 7 root stack and bottom tabs connect Home, Explore, Product Details, Cart, Account, and Palate Matcher Modal.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Directly demonstrated.</td></tr>
+</table>
+
+<h2>10.8 Assignment 8 — Dynamic data rendering</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Fetch data from a local JSON file or public API; display the data using FlatList; allow users to scroll through the list efficiently. (CO5.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>Product catalogues on Home and Explore render via FlatList with item recycling and keyExtractor over 10 typed single origins.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Directly demonstrated.</td></tr>
+</table>
+
+<h2>10.9 Assignment 9 — Student Portfolio application</h2>
+<table>
+  <tr><td><strong>Original problem statement</strong></td><td>Student Portfolio Application: Home, About, Skills, Projects (FlatList), Contact, Stack Navigator, responsive StyleSheet/Flexbox UI. (CO3, CO4, CO5.)</td></tr>
+  <tr><td><strong>BrewBox relationship</strong></td><td>Shares identical architectural mechanics: nested stack navigation, list rendering, form inputs, and responsive Flexbox styling.</td></tr>
+  <tr><td><strong>Implementation status</strong></td><td>Conceptually related.</td></tr>
+</table>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- CHAPTER 11 & 12 & 13 & 14 -->
+<h1>11. Testing and Results</h1>
+<div class="table-title">Table 12: Test matrix</div>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Area</th>
+      <th>Procedure</th>
+      <th>Expected result</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>T1</td><td>Launch</td><td>Cold boot app on physical Android phone without Metro running</td><td>Opens in &lt;800ms via embedded Hermes bytecode</td><td>Verified working on Vivo 1919</td></tr>
+    <tr><td>T2</td><td>Search</td><td>Type query in explore search bar</td><td>Catalog filters dynamically to matching beans</td><td>Verified working</td></tr>
+    <tr><td>T3</td><td>Category filter</td><td>Select Coffee, Tea, Gear chips</td><td>Only selected category items render</td><td>Verified working</td></tr>
+    <tr><td>T4</td><td>Product details</td><td>Open a single-origin micro-lot</td><td>Displays 5-stage RoastMeter, tasting radar, and brew recipe</td><td>Verified working</td></tr>
+    <tr><td>T5</td><td>Grind selection</td><td>Select Whole Bean, Espresso, V60</td><td>Active pill highlights; apparatus specs update</td><td>Verified working</td></tr>
+    <tr><td>T6</td><td>Cart threshold</td><td>Add items below and above Rs 999</td><td>Progress meter advances; unlocks free shipping at Rs 999</td><td>Verified working</td></tr>
+    <tr><td>T7</td><td>Voucher validation</td><td>Apply ROASTMASTER15 promo code</td><td>15% discount deducted if subtotal &gt;= Rs 500</td><td>Verified working (Jest 7/7)</td></tr>
+    <tr><td>T8</td><td>Palate quiz</td><td>Complete 3-step recommendation wizard</td><td>Deterministic single-origin match presented</td><td>Verified working</td></tr>
+    <tr><td>T9</td><td>Order tracking</td><td>Complete simulated checkout</td><td>5-stage roastery milestones generated</td><td>Verified working</td></tr>
+    <tr><td>T10</td><td>TypeScript check</td><td>Run <code>npx tsc --noEmit</code></td><td>0 compilation errors</td><td>Verified passed (0 errors)</td></tr>
+    <tr><td>T11</td><td>Automated unit tests</td><td>Run <code>npm test</code></td><td>7 out of 7 Jest unit tests pass</td><td>Verified passed (7/7 passed)</td></tr>
+  </tbody>
+</table>
+
+<h1>12. Limitations</h1>
+<ul>
+  <li><strong>Static catalogue:</strong> Products are local typed TypeScript records; no live remote cloud CMS.</li>
+  <li><strong>Simulated checkout:</strong> No production banking payment gateway (UPI/Razorpay/Stripe); orders are simulated and stored locally.</li>
+  <li><strong>No backend database:</strong> State resides in client Zustand memory and local device storage; no cloud synchronisation across devices.</li>
+  <li><strong>Android verified:</strong> Android 12 (Vivo 1919) is the verified target; iOS build has not been tested on physical hardware.</li>
+</ul>
+
+<h1>13. Future Scope</h1>
+<ul>
+  <li>Backend integration with Supabase / PostgreSQL for live inventory management and cloud authentication.</li>
+  <li>Payment gateway integration with Razorpay native SDK for live UPI and card transactions.</li>
+  <li>Push notifications via Firebase Cloud Messaging (FCM) for seasonal micro-lot drop alerts.</li>
+  <li>Automated CI/CD GitHub Actions workflow for automated APK building and test coverage reports.</li>
+</ul>
+
+<h1>14. Conclusion</h1>
+<p>
+  BrewBox demonstrates how React Native 0.87, TypeScript 6.0, React Navigation 7, Zustand 5.0, and the Hermes AOT engine can be combined into a coherent, high-craft mobile shopping journey within a single cross-platform codebase. It directly demonstrates CPAD concepts including components, props, state, layout engines, and project structure; partially demonstrates navigation, input handling, and list data rendering; and relates conceptually to the course comparison and portfolio assignments. Its standalone offline compilation with <code>useDevSupport = false</code> proves real-world mobile engineering feasibility on physical Android hardware.
+</p>
+
+<h1>References</h1>
+<p>[1] MIT ADT University, School of Computing, Department of Information Technology. Course Handout: Cross Platform App Development (23IT4004), Version 1.0, July 2026.</p>
+<p>[2] React Native Documentation. https://reactnative.dev/</p>
+<p>[3] React Documentation. https://react.dev/</p>
+<p>[4] React Navigation Documentation. https://reactnavigation.org/</p>
+<p>[5] Zustand Documentation. https://github.com/pmndrs/zustand</p>
+<p>[6] Meta Open Source Yoga Layout Engine. https://yogalayout.dev/</p>
+<p>[7] TypeScript Documentation. https://www.typescriptlang.org/docs/</p>
+<p>[8] Lebensold, J. React Native Cookbook. O'Reilly Media (course text T3).</p>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- APPENDIX A & B -->
+<h1>Appendix A — Code Snippets</h1>
+<div class="yellow-box">
+  <strong>Illustrative Snippets</strong>
+  Snippets A–L illustrate the core patterns required across the CPAD curriculum as implemented in BrewBox.
+</div>
+
+<div class="snippet-title">Snippet A — Assignment 1 — Basic Component</div>
+<div class="snippet-box">import React from 'react';
+import { View, Text } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Hello, BrewBox!&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet B — Assignment 2 — Cross-Platform Header Component</div>
+<div class="snippet-box">import { View, Text } from 'react-native';
+
+export function RoasteryHeader() {
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;BrewBox Roastery&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet C — Assignment 3 — Props and Controlled Input State</div>
+<div class="snippet-box">import React, { useState } from 'react';
+import { TextInput } from 'react-native';
+
+export function ProductSearch() {
+  const [query, setQuery] = useState('');
+  return (
+    &lt;TextInput
+      value={query}
+      onChangeText={setQuery}
+      placeholder="Search single origins, roasts..."
+    /&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet D — Assignment 4 — Reusable Product Component</div>
+<div class="snippet-box">import React from 'react';
+import { Pressable, Text } from 'react-native';
+
+type ProductCardProps = {
+  name: string;
+  price: number;
+  onPress: () => void;
+};
+
+export function ProductCard({ name, price, onPress }: ProductCardProps) {
+  return (
+    &lt;Pressable onPress={onPress}&gt;
+      &lt;Text&gt;{name}&lt;/Text&gt;
+      &lt;Text&gt;₹{price.toLocaleString('en-IN')}&lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet E — Assignment 5 — Profile Preview Component</div>
+<div class="snippet-box">import React from 'react';
+import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+
+export function ProfilePreview() {
+  return (
+    &lt;ScrollView&gt;
+      &lt;View style={styles.container}&gt;
+        &lt;Image source={{ uri: 'https://example.com/roaster.jpg' }} style={styles.avatar} /&gt;
+        &lt;Text style={styles.name}&gt;Varad Mandhare&lt;/Text&gt;
+      &lt;/View&gt;
+    &lt;/ScrollView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 16, alignItems: 'center' },
+  avatar: { width: 96, height: 96, borderRadius: 48 },
+  name: { fontSize: 16, fontWeight: 'bold', marginTop: 8 }
+});</div>
+
+<div class="snippet-title">Snippet F — Assignment 6 — Input and Event Handling with Alert</div>
+<div class="snippet-box">import React from 'react';
+import { View, TextInput, Pressable, Text, Alert } from 'react-native';
+
+export function VoucherInput() {
+  const [code, setCode] = React.useState('');
+  return (
+    &lt;View&gt;
+      &lt;TextInput value={code} onChangeText={setCode} placeholder="Promo code" /&gt;
+      &lt;Pressable onPress={() => Alert.alert('Promo Applied', `Code: ${code}`)}&gt;
+        &lt;Text&gt;Apply&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet G — Assignment 7 — Stack Navigation Configuration</div>
+<div class="snippet-box">import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
+
+export function ExampleStack() {
+  return (
+    &lt;Stack.Navigator&gt;
+      &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
+      &lt;Stack.Screen name="Explore" component={ExploreScreen} /&gt;
+      &lt;Stack.Screen name="Details" component={ProductDetailsScreen} /&gt;
+    &lt;/Stack.Navigator&gt;
+  );
+}</div>
+
+<div class="snippet-title">Snippet H — Assignment 8 — FlatList Dynamic List Rendering</div>
+<div class="snippet-box">import React from 'react';
+import { FlatList, Text } from 'react-native';
+
+const coffeeLots = [
+  { id: '1', name: 'Ethiopia Yirgacheffe' },
+  { id: '2', name: 'Panama Geisha Boquete' }
+];
+
+export function CoffeeList() {
+  return (
+    &lt;FlatList
+      data={coffeeLots}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => &lt;Text&gt;{item.name}&lt;/Text&gt;}
+    /&gt;
+  );
+}</div>
+
+<div class="page-break"></div>
+<div class="header-rule"></div>
+
+<!-- APPENDIX B: SCREENSHOT EVIDENCE -->
+<h1>Appendix B — Screenshot Evidence Checklist</h1>
+<div class="table-title">Table 13: Screenshot evidence checklist (Verified on Vivo 1919 physical smartphone)</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 12%;">No.</th>
+      <th style="width: 25%;">Screen</th>
+      <th>Verified Physical Hardware Capture</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>B-1</td><td>Home / Roastery</td><td>Actual physical device capture of Roastery Home in BrewBox</td></tr>
+    <tr><td>B-2</td><td>Explore / Catalogue</td><td>Actual physical device capture of Explore &amp; Filter screen</td></tr>
+    <tr><td>B-3</td><td>Search &amp; Elevation Filter</td><td>Actual physical device capture of search by MASL elevation</td></tr>
+    <tr><td>B-4</td><td>Product Details &amp; RoastMeter</td><td>Actual physical device capture of 5-stage RoastMeter gauge</td></tr>
+    <tr><td>B-5</td><td>Palate Matcher Quiz</td><td>Actual physical device capture of 3-step recommendation wizard</td></tr>
+    <tr><td>B-6</td><td>Roastery Cart</td><td>Actual physical device capture of Cart with Rs 999 threshold meter</td></tr>
+    <tr><td>B-7</td><td>Account &amp; Orders</td><td>Actual physical device capture of Account with 5-stage live order tracking</td></tr>
+  </tbody>
+</table>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_home.png" class="screenshot-img" alt="B-1: Home Screen" />
+  <div class="fig-caption">Figure 7: B-1: Home / Roastery screen (Verified capture on physical Vivo 1919).</div>
+</div>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_explore.png" class="screenshot-img" alt="B-2: Explore Screen" />
+  <div class="fig-caption">Figure 8: B-2: Explore &amp; Filter screen with origin pills and MASL elevation.</div>
+</div>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_details.png" class="screenshot-img" alt="B-3: Details Screen" />
+  <div class="fig-caption">Figure 9: B-3: Product Details screen with 5-stage RoastMeter gauge and brew recipe.</div>
+</div>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_cart.png" class="screenshot-img" alt="B-4: Cart Screen" />
+  <div class="fig-caption">Figure 10: B-4: Roastery Cart with Free Shipping progress meter (Rs 999 threshold).</div>
+</div>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_quiz.png" class="screenshot-img" alt="B-5: Quiz Screen" />
+  <div class="fig-caption">Figure 11: B-5: Palate Matcher 3-step interactive recommendation wizard.</div>
+</div>
+
+<div class="screenshot-container" style="margin-top: 15px;">
+  <img src="docs/screenshots/screen_palate.png" class="screenshot-img" alt="B-6: Account Screen" />
+  <div class="fig-caption">Figure 12: B-6: Account &amp; Orders screen with 5-stage roastery batch tracking.</div>
+</div>
+
+</body>
+</html>

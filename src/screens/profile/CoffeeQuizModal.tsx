@@ -1,3 +1,7 @@
+// CoffeeQuizModal.tsx — 3-step Palate Matcher quiz shown as a bottom sheet modal.
+// Step 1: brew method | Step 2: flavor preference | Step 3: milk habit
+// After completion, saves results to userStore and recommends a matching product.
+
 import React, { useState } from 'react';
 import {
   Modal,
@@ -9,6 +13,7 @@ import {
 } from 'react-native';
 import { BespokeIcon, CustomButton } from '../../components';
 import { PRODUCTS } from '../../data';
+// useUserStore — updateTasteProfile saves quiz answers to the user's profile
 import { useUserStore } from '../../store';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../theme';
 import { Product } from '../../types';
@@ -75,14 +80,19 @@ export const CoffeeQuizModal: React.FC<CoffeeQuizModalProps> = ({
   onClose,
   onSelectProduct,
 }) => {
+  // updateTasteProfile — merges quiz answers into the user's taste profile
   const { updateTasteProfile } = useUserStore();
 
+  // currentStep — which question (0, 1, 2) is currently shown
   const [currentStep, setCurrentStep] = useState(0);
+  // selectedMethod / selectedTaste / selectedMilk — user's answers per step
   const [selectedMethod, setSelectedMethod] = useState('Hario V60');
   const [selectedTaste, setSelectedTaste] = useState<'Bright & Fruity' | 'Balanced & Sweet' | 'Dark & Chocolaty' | 'Adventurous'>('Bright & Fruity');
   const [selectedMilk, setSelectedMilk] = useState<'Black / Straight' | 'Oat Milk' | 'Dairy Milk' | 'Cold Foam'>('Black / Straight');
+  // isCompleted — true after all 3 questions answered; shows results screen
   const [isCompleted, setIsCompleted] = useState(false);
 
+  // matchedProduct — the recommended product based on taste leaning
   const matchedProduct = PRODUCTS.find((p) => {
     if (selectedTaste === 'Bright & Fruity') return p.id === 'prod-ethiopia-idido';
     if (selectedTaste === 'Dark & Chocolaty') return p.id === 'prod-sumatra-gayo-dark' || p.id === 'prod-velvet-obsidian-blend';

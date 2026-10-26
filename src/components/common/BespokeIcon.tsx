@@ -1,7 +1,17 @@
+// React is required for JSX rendering.
 import React from 'react';
+
+// Svg is the root container for any SVG graphic in React Native.
+// Circle, Path, Rect are SVG shape primitives — the building blocks of every icon.
+// We use react-native-svg because React Native cannot render browser SVG natively.
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
+
+// We import Colors to use the default icon color from our design system.
 import { Colors } from '../../theme';
 
+// ── IconName ──────────────────────────────────────────────────────────────────
+// A TypeScript union type listing every valid icon name in this library.
+// This prevents passing an invalid icon name — TypeScript will catch it at compile time.
 export type IconName =
   | 'coffee-bean'
   | 'pourover'
@@ -34,18 +44,34 @@ export type IconName =
   | 'info'
   | 'sliders';
 
+// ── BespokeIconProps ──────────────────────────────────────────────────────────
+// Props accepted by the BespokeIcon component.
 interface BespokeIconProps {
-  name: IconName | string;
-  size?: number;
-  color?: string;
+  name: IconName | string; // The icon to render (string fallback for dynamic usage)
+  size?: number;           // Width and height in pixels (default: 22)
+  color?: string;          // Icon stroke/fill color (default: textPrimary from theme)
 }
 
+// ── BespokeIcon ───────────────────────────────────────────────────────────────
+// A zero-dependency custom SVG icon library with 30+ hand-crafted icons.
+// All icons are drawn using SVG Path, Circle, and Rect primitives.
+//
+// WHY custom icons instead of a library like react-native-vector-icons?
+// - Zero external font dependencies (no .ttf files needed in the APK)
+// - Full control over stroke width, style, and artisanal aesthetic
+// - Perfectly matches the BrewBox brand (coffee beans, V60, French press, etc.)
+// - Works offline in the standalone APK without any native linking
+//
+// Each icon uses a 24×24 viewBox — the standard SVG icon grid.
+// strokeWidth: 1.8 gives a refined, editorial line weight throughout.
 export const BespokeIcon: React.FC<BespokeIconProps> = ({
   name,
   size = 22,
   color = Colors.light.textPrimary,
 }) => {
   switch (name) {
+    // ── Coffee Bean ────────────────────────────────────────────────────────────
+    // Used for: Home tab icon, product category badges
     case 'coffee-bean':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -69,6 +95,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Pour Over / V60 Dripper ────────────────────────────────────────────────
+    // Used for: GrindSelector pour-over option, brew guide icons
     case 'pourover':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -99,6 +127,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── French Press ───────────────────────────────────────────────────────────
+    // Used for: GrindSelector French press option
     case 'french-press':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -122,6 +152,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Teapot ─────────────────────────────────────────────────────────────────
+    // Used for: Tea category indicators
     case 'teapot':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -147,6 +179,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Coffee Cup ─────────────────────────────────────────────────────────────
+    // Used for: Merchandise category, espresso grind option
     case 'cup':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -176,6 +210,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Leaf ───────────────────────────────────────────────────────────────────
+    // Used for: Tea category tab, botanical/organic indicators
     case 'leaf':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -201,6 +237,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Flame ──────────────────────────────────────────────────────────────────
+    // Used for: Roast level indicators, hot product badges
     case 'flame':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -213,6 +251,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Sparkles ───────────────────────────────────────────────────────────────
+    // Used for: "All" category icon, featured/special product indicators
     case 'sparkles':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -227,6 +267,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Heart (Outline) ────────────────────────────────────────────────────────
+    // Used for: Wishlist tab icon, unsaved product state on ProductCard
     case 'heart':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -240,6 +282,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Heart (Filled) ─────────────────────────────────────────────────────────
+    // Used for: Saved/favorited product state on ProductCard (red filled heart)
     case 'heart-filled':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -250,6 +294,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Shopping Bag ───────────────────────────────────────────────────────────
+    // Used for: Cart tab icon in the bottom navigation bar
     case 'bag':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -268,6 +314,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Search / Magnifying Glass ──────────────────────────────────────────────
+    // Used for: Explore tab icon, SearchBar component
     case 'search':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -287,6 +335,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Filter / Sliders ───────────────────────────────────────────────────────
+    // Used for: Filter button in SearchBar, filter panel toggle
     case 'filter':
     case 'sliders':
       return (
@@ -300,6 +350,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Star ───────────────────────────────────────────────────────────────────
+    // Used for: Product rating display (filled gold star)
     case 'star':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -310,6 +362,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Check / Tick ───────────────────────────────────────────────────────────
+    // Used for: Order step completion indicators, promo code success
     case 'check':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -323,6 +377,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Delivery Truck ─────────────────────────────────────────────────────────
+    // Used for: FreeShippingMeter component, order dispatched step
     case 'truck':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -338,6 +394,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Arrow Left ─────────────────────────────────────────────────────────────
+    // Used for: Back navigation buttons on detail screens
     case 'arrow-left':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -351,6 +409,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Arrow Right ────────────────────────────────────────────────────────────
+    // Used for: Forward navigation, "View All" links
     case 'arrow-right':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -364,6 +424,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Chevron Down ───────────────────────────────────────────────────────────
+    // Used for: Dropdown menus, expandable sections
     case 'chevron-down':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -377,6 +439,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Chevron Right ──────────────────────────────────────────────────────────
+    // Used for: List item navigation arrows, "See more" indicators
     case 'chevron-right':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -390,6 +454,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Plus ───────────────────────────────────────────────────────────────────
+    // Used for: "Add to Cart" quick-add button on ProductCard
     case 'plus':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -402,6 +468,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Minus ──────────────────────────────────────────────────────────────────
+    // Used for: Quantity decrement button in CartItemRow
     case 'minus':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -414,6 +482,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Trash / Delete ─────────────────────────────────────────────────────────
+    // Used for: Remove item from cart button
     case 'trash':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -428,6 +498,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── User / Person ──────────────────────────────────────────────────────────
+    // Used for: Profile/Palate tab icon
     case 'user':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -441,6 +513,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Shield / Security ──────────────────────────────────────────────────────
+    // Used for: Secure payment indicators on the Checkout screen
     case 'shield':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -454,6 +528,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Clock ──────────────────────────────────────────────────────────────────
+    // Used for: Brew time display, roasting schedule indicators
     case 'clock':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -467,6 +543,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Map Pin / Location ─────────────────────────────────────────────────────
+    // Used for: Shipping address display on Checkout and Order screens
     case 'map-pin':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -479,6 +557,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Close / X ──────────────────────────────────────────────────────────────
+    // Used for: Closing modals, clearing search input, dismissing alerts
     case 'close':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -491,6 +571,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Info ───────────────────────────────────────────────────────────────────
+    // Used for: Informational tooltips, brew guide hints
     case 'info':
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -499,6 +581,8 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         </Svg>
       );
 
+    // ── Default Fallback ───────────────────────────────────────────────────────
+    // If an unrecognized icon name is passed, render a simple circle as a placeholder.
     default:
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

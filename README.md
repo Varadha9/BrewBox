@@ -61,7 +61,8 @@
 
 Formatted strictly according to MIT School of Computing, MIT-ADT University guidelines with custom cover page, formal acknowledgement, detailed index, system architecture, offline Hermes build pipeline, and physical device screenshot showcase:
 
-- 📕 **Full Project Report (PDF):** [`BrewBox_Project_Report.pdf`](./BrewBox_Project_Report.pdf) *(Print/Submit ready)*
+- 🏆 **CPAD Course Project Report (TechNest Format, 29 Pages):** [`BrewBox_CPAD_Report.pdf`](./BrewBox_CPAD_Report.pdf) *(Exact TechNest layout with CPAD assignments 1–9 mapping, code appendices, and device checklist)*
+- 📕 **MIT-ADT Academic Project Report (21 Pages):** [`BrewBox_Project_Report.pdf`](./BrewBox_Project_Report.pdf) *(Print/Submit ready with university crest and formal acknowledgement)*
 - 📝 **Editable Word Document (DOCX):** [`BrewBox_Project_Report.docx`](./BrewBox_Project_Report.docx) *(Full report with styles & tables)*
 
 | 📄 Cover Page (Page 1) | ✍️ Acknowledgement (Page 2) | 📋 Table of Contents (Page 3) |

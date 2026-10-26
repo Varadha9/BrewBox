@@ -1,3 +1,7 @@
+// HomeScreen.tsx — The main landing page of BrewBox.
+// Shows: editorial hero banner, category cards, Palate Matcher quiz teaser,
+// featured micro-lots carousel, best sellers grid, and roast promise card.
+
 import React from 'react';
 import {
   Image,
@@ -15,6 +19,8 @@ import {
   ProductCard,
 } from '../../components';
 import { CATEGORIES, PRODUCTS } from '../../data';
+// useCartStore — reads cart count for the badge on the bag icon
+// useFilterStore — sets category filter before navigating to Explore
 import { useCartStore, useFilterStore } from '../../store';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../theme';
 import { Product } from '../../types';
@@ -24,22 +30,27 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  // cartCount — shown as a number badge on the bag icon in the header
   const { getItemCount } = useCartStore();
   const { setSelectedCategory, resetFilters } = useFilterStore();
   const cartCount = getItemCount();
 
+  // bestSellers / microLots — filtered subsets of the full product catalog
   const bestSellers = PRODUCTS.filter((p) => p.isBestSeller);
   const microLots = PRODUCTS.filter((p) => p.isMicroLot);
 
+  // Navigate to ProductDetails passing the full product object
   const handleProductPress = (product: Product) => {
     navigation.navigate('ProductDetails', { product });
   };
 
+  // Set category filter then jump to Explore tab
   const handleCategoryPress = (categoryId: string) => {
     setSelectedCategory(categoryId as any);
     navigation.navigate('ExploreTab', { initialCategory: categoryId });
   };
 
+  // Reset all filters then go to Explore
   const handleExploreAll = () => {
     resetFilters();
     navigation.navigate('ExploreTab');

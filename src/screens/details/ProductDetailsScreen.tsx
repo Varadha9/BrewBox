@@ -1,3 +1,8 @@
+// ProductDetailsScreen.tsx — Full product page with image gallery, roast meter,
+// tasting notes, grind/weight selector, brew guide, and customer reviews.
+// Has 3 tabs: Overview & Origin | Brew Recipe | Reviews
+// Sticky bottom bar shows price + Add to Cart / Buy Now buttons.
+
 import React, { useState } from 'react';
 import {
   Image,
@@ -16,6 +21,7 @@ import {
   RoastMeter,
   TasteProfileBar,
 } from '../../components';
+// useCartStore — addItem to cart; useWishlistStore — toggle heart/save
 import { useCartStore, useWishlistStore } from '../../store';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../theme';
 import { GrindOption, Product, WeightOption } from '../../types';
@@ -33,27 +39,35 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { product } = route.params;
+  const { product } = route.params;  // full Product object passed from ProductCard
   const { addItem } = useCartStore();
   const { isInWishlist, toggleWishlist } = useWishlistStore();
 
+  // selectedGrind / selectedWeight — user's current grind and package size choice
   const [selectedGrind, setSelectedGrind] = useState<GrindOption>(
     product.availableGrinds[0] || 'Whole Bean'
   );
   const [selectedWeight, setSelectedWeight] = useState<WeightOption>(
     product.weightOptions[0] || { weightGrams: 250, label: '250g', priceMultiplier: 1 }
   );
+  // selectedImageIndex — which gallery image is shown in the hero
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  // activeTab — controls which content tab is visible
   const [activeTab, setActiveTab] = useState<'overview' | 'brewGuide' | 'reviews'>('overview');
+  // addedToast — shows a brief "Added to cart" banner for 2.2s
   const [addedToast, setAddedToast] = useState(false);
 
+  // isFav — true if this product is in the wishlist (shows filled heart)
   const isFav = isInWishlist(product.id);
+  // currentPrice — recalculates when user switches package size
   const currentPrice = Math.round(product.basePrice * selectedWeight.priceMultiplier);
 
+  // images — use gallery array if available, otherwise fall back to single image
   const images = product.galleryImages && product.galleryImages.length > 0
     ? product.galleryImages
     : [product.image];
 
+  // handleAddToCart — adds item and shows toast banner for 2.2 seconds
   const handleAddToCart = () => {
     addItem(product, selectedGrind, selectedWeight, 1);
     setAddedToast(true);
@@ -62,6 +76,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
     }, 2200);
   };
 
+  // handleBuyNow — adds item then immediately navigates to cart
   const handleBuyNow = () => {
     addItem(product, selectedGrind, selectedWeight, 1);
     navigation.navigate('CartTab');
@@ -102,7 +117,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Gallery Image Hero */}
+        {/* ── Gallery Hero ── full-width image with thumbnail row overlay */}
         <View style={styles.imageGalleryContainer}>
           <Image
             source={{ uri: images[selectedImageIndex] }}
@@ -128,9 +143,9 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
           )}
         </View>
 
-        {/* Content Container */}
+        {/* ── Content Area ── all text, selectors, tabs below the image */}
         <View style={styles.content}>
-          {/* Badges Row */}
+          {/* Micro-lot, process, elevation, and tea badges */}
           <View style={styles.badgesRow}>
             {product.isMicroLot && (
               <Badge label="Rare Micro-Lot" variant="micro-lot" />
@@ -165,7 +180,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
             </View>
           </View>
 
-          {/* Navigation Sub-Tabs */}
+          {/* ── Tab Bar ── Overview | Brew Recipe | Reviews */}
           <View style={styles.tabBar}>
             <Pressable
               onPress={() => setActiveTab('overview')}
@@ -215,7 +230,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
             </Pressable>
           </View>
 
-          {/* TAB 1: OVERVIEW & TASTING */}
+          {/* ── Tab 1: Overview ── roast meter, tasting notes, weight/grind, origin specs */}
           {activeTab === 'overview' && (
             <View style={styles.tabContent}>
               {/* Roast Meter (for coffee) */}
@@ -352,7 +367,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
             </View>
           )}
 
-          {/* TAB 2: BREW GUIDE */}
+          {/* ── Tab 2: Brew Guide ── step-by-step extraction recipe */}
           {activeTab === 'brewGuide' && product.brewGuide && (
             <View style={styles.tabContent}>
               <View style={styles.brewCard}>
@@ -411,7 +426,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
             </View>
           )}
 
-          {/* TAB 3: REVIEWS */}
+          {/* ── Tab 3: Reviews ── customer reviews or empty state */}
           {activeTab === 'reviews' && (
             <View style={styles.tabContent}>
               {product.reviews.length === 0 ? (
@@ -456,7 +471,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
         </View>
       </ScrollView>
 
-      {/* Added to Cart Feedback Banner */}
+      {/* ── Toast Banner ── slides up briefly after adding to cart */}
       {addedToast && (
         <View style={styles.toast}>
           <BespokeIcon name="check" size={16} color="#FFFFFF" />
@@ -466,7 +481,7 @@ export const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
         </View>
       )}
 
-      {/* Sticky Bottom Action Bar */}
+      {/* ── Sticky Bottom Bar ── price + Add to Cart + Buy Now buttons */}
       <View style={styles.bottomBar}>
         <View style={styles.priceCol}>
           <Text style={styles.bottomPriceLabel}>Total Price</Text>

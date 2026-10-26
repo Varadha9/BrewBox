@@ -1,3 +1,7 @@
+// ExploreScreen.tsx — Search and filter the full product catalog.
+// Has a search bar, category pills, roast level pills, micro-lot toggle,
+// a results grid, and a filter bottom sheet modal.
+
 import React, { useMemo, useState } from 'react';
 import {
   Modal,
@@ -15,6 +19,7 @@ import {
   SearchBar,
 } from '../../components';
 import { CATEGORIES, PRODUCTS } from '../../data';
+// useFilterStore — all search/filter state lives here (Zustand)
 import { useFilterStore } from '../../store';
 import { BorderRadius, Colors, Spacing, Typography } from '../../theme';
 import { Product, RoastLevel } from '../../types';
@@ -36,6 +41,7 @@ const ROAST_OPTIONS: (RoastLevel | 'all')[] = [
 export const ExploreScreen: React.FC<ExploreScreenProps> = ({
   navigation,
 }) => {
+  // Pull all filter state and setters from the global filter store
   const {
     searchQuery,
     setSearchQuery,
@@ -50,8 +56,10 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
     resetFilters,
   } = useFilterStore();
 
+  // filterModalVisible — controls the sort/filter bottom sheet
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
+  // filteredProducts — recalculates only when any filter value changes (useMemo = performance)
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((item) => {
       // Category filter

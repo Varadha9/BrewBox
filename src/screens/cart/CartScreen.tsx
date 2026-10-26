@@ -1,3 +1,7 @@
+// CartScreen.tsx — The shopping cart screen.
+// Shows all added items, free shipping progress meter, promo code input,
+// order price breakdown, and a "Proceed to Checkout" button.
+
 import React, { useState } from 'react';
 import {
   Image,
@@ -9,11 +13,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  BespokeIcon,
-  CustomButton,
-  FreeShippingMeter,
-} from '../../components';
+import { BespokeIcon, CustomButton, FreeShippingMeter } from '../../components';
+// useCartStore — all cart state: items, promo, pricing actions
 import { useCartStore } from '../../store';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../theme';
 
@@ -33,40 +34,40 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     getPricing,
   } = useCartStore();
 
+  // promoInput = text the user types in the promo code field
   const [promoInput, setPromoInput] = useState('');
+  // pricing = full breakdown object: subtotal, discount, shipping, tax, total
   const pricing = getPricing();
 
+  // handleApplyPromo — applies either the typed code or a quick-tap chip code
   const handleApplyPromo = (codeToApply?: string) => {
     const code = codeToApply || promoInput;
     if (code.trim()) {
       const success = applyPromo(code);
-      if (success) {
-        setPromoInput('');
-      }
+      if (success) setPromoInput(''); // clear input on success
     }
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Header */}
+
+      {/* ── Header ── */}
       <View style={styles.header}>
         <View>
           <Text style={styles.headerSubtitle}>YOUR ROAST SELECTION</Text>
           <Text style={styles.headerTitle}>BrewBox Cart</Text>
         </View>
+        {/* Total quantity count on the right */}
         <Text style={styles.itemCountText}>
           {items.reduce((sum, item) => sum + item.quantity, 0)} Items
         </Text>
       </View>
 
+      {/* ── Empty State ── shown when cart has no items */}
       {items.length === 0 ? (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
-            <BespokeIcon
-              name="bag"
-              size={48}
-              color={Colors.light.borderStrong}
-            />
+            <BespokeIcon name="bag" size={48} color={Colors.light.borderStrong} />
           </View>
           <Text style={styles.emptyTitle}>Your BrewBox is Empty</Text>
           <Text style={styles.emptySubtitle}>
@@ -84,7 +85,8 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Free Shipping Progress Meter */}
+
+          {/* ── Free Shipping Meter ── progress bar toward ₹999 threshold */}
           <FreeShippingMeter
             subtotal={pricing.subtotal}
             freeShippingThreshold={pricing.freeShippingThreshold}
@@ -92,10 +94,11 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             isEligible={pricing.isFreeShippingEligible}
           />
 
-          {/* Cart Items List */}
+          {/* ── Cart Items List ── one card per item */}
           <View style={styles.itemsList}>
             {items.map((item) => (
               <View key={item.id} style={styles.itemCard}>
+                {/* Product thumbnail */}
                 <Image
                   source={{ uri: item.product.image }}
                   style={styles.itemImage}
@@ -103,60 +106,43 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
                 />
 
                 <View style={styles.itemInfo}>
+                  {/* Item name + trash button */}
                   <View style={styles.itemHeader}>
                     <Text style={styles.itemName} numberOfLines={1}>
                       {item.product.name}
                     </Text>
-                    <Pressable
-                      onPress={() => removeItem(item.id)}
-                      hitSlop={8}
-                    >
-                      <BespokeIcon
-                        name="trash"
-                        size={16}
-                        color={Colors.light.textMuted}
-                      />
+                    <Pressable onPress={() => removeItem(item.id)} hitSlop={8}>
+                      <BespokeIcon name="trash" size={16} color={Colors.light.textMuted} />
                     </Pressable>
                   </View>
 
+                  {/* Weight and grind variant */}
                   <Text style={styles.itemVariant}>
                     {item.selectedWeight.label} • {item.selectedGrind}
                   </Text>
 
+                  {/* Price + quantity stepper */}
                   <View style={styles.itemFooter}>
                     <Text style={styles.itemPrice}>
-                      {item.product.currency}
-                      {item.unitPrice}
+                      {item.product.currency}{item.unitPrice}
                     </Text>
 
-                    {/* Stepper */}
+                    {/* ── Stepper ── minus / count / plus */}
                     <View style={styles.stepper}>
                       <Pressable
-                        onPress={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
+                        onPress={() => updateQuantity(item.id, item.quantity - 1)}
                         style={styles.stepBtn}
                         hitSlop={6}
                       >
-                        <BespokeIcon
-                          name="minus"
-                          size={12}
-                          color={Colors.light.textPrimary}
-                        />
+                        <BespokeIcon name="minus" size={12} color={Colors.light.textPrimary} />
                       </Pressable>
                       <Text style={styles.quantityText}>{item.quantity}</Text>
                       <Pressable
-                        onPress={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
+                        onPress={() => updateQuantity(item.id, item.quantity + 1)}
                         style={styles.stepBtn}
                         hitSlop={6}
                       >
-                        <BespokeIcon
-                          name="plus"
-                          size={12}
-                          color={Colors.light.textPrimary}
-                        />
+                        <BespokeIcon name="plus" size={12} color={Colors.light.textPrimary} />
                       </Pressable>
                     </View>
                   </View>
@@ -165,37 +151,28 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             ))}
           </View>
 
-          {/* Promo Code Section */}
+          {/* ── Promo Code Section ── */}
           <View style={styles.promoSection}>
             <Text style={styles.sectionTitle}>Roastery Promo Code</Text>
 
+            {/* If a promo is already applied, show it with a remove button */}
             {appliedPromo ? (
               <View style={styles.appliedPromoBox}>
                 <View style={styles.appliedPromoInfo}>
-                  <BespokeIcon
-                    name="sparkles"
-                    size={18}
-                    color={Colors.light.primary}
-                  />
+                  <BespokeIcon name="sparkles" size={18} color={Colors.light.primary} />
                   <View>
-                    <Text style={styles.appliedPromoCode}>
-                      {appliedPromo.code}
-                    </Text>
-                    <Text style={styles.appliedPromoDesc}>
-                      {appliedPromo.description}
-                    </Text>
+                    <Text style={styles.appliedPromoCode}>{appliedPromo.code}</Text>
+                    <Text style={styles.appliedPromoDesc}>{appliedPromo.description}</Text>
                   </View>
                 </View>
+                {/* X button to remove the applied promo */}
                 <Pressable onPress={removePromo} hitSlop={8}>
-                  <BespokeIcon
-                    name="close"
-                    size={16}
-                    color={Colors.light.textMuted}
-                  />
+                  <BespokeIcon name="close" size={16} color={Colors.light.textMuted} />
                 </Pressable>
               </View>
             ) : (
               <>
+                {/* Text input + Apply button row */}
                 <View style={styles.promoInputRow}>
                   <TextInput
                     value={promoInput}
@@ -214,24 +191,16 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
                   />
                 </View>
 
-                {promoError && (
-                  <Text style={styles.promoErrorText}>{promoError}</Text>
-                )}
+                {/* Error message if promo is invalid or minimum not met */}
+                {promoError && <Text style={styles.promoErrorText}>{promoError}</Text>}
 
-                {/* Available Promo Chips */}
+                {/* Quick-tap promo chips — tap to auto-apply */}
                 <View style={styles.promoChipsRow}>
-                  <Pressable
-                    onPress={() => handleApplyPromo('ROASTMASTER15')}
-                    style={styles.promoChip}
-                  >
+                  <Pressable onPress={() => handleApplyPromo('ROASTMASTER15')} style={styles.promoChip}>
                     <Text style={styles.promoChipCode}>ROASTMASTER15</Text>
                     <Text style={styles.promoChipDesc}>15% Off (min ₹900)</Text>
                   </Pressable>
-
-                  <Pressable
-                    onPress={() => handleApplyPromo('FIRSTBREW')}
-                    style={styles.promoChip}
-                  >
+                  <Pressable onPress={() => handleApplyPromo('FIRSTBREW')} style={styles.promoChip}>
                     <Text style={styles.promoChipCode}>FIRSTBREW</Text>
                     <Text style={styles.promoChipDesc}>10% Off</Text>
                   </Pressable>
@@ -240,15 +209,17 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             )}
           </View>
 
-          {/* Order Summary Card */}
+          {/* ── Order Summary Card ── full price breakdown */}
           <View style={styles.summaryCard}>
             <Text style={styles.sectionTitle}>Order Breakdown</Text>
 
+            {/* Subtotal row */}
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Subtotal</Text>
               <Text style={styles.summaryValue}>₹{pricing.subtotal}</Text>
             </View>
 
+            {/* Discount row — only shown if a promo is applied */}
             {pricing.discountAmount > 0 && (
               <View style={styles.summaryRow}>
                 <Text style={[styles.summaryLabel, { color: Colors.light.success }]}>
@@ -260,39 +231,36 @@ export const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
               </View>
             )}
 
+            {/* Eco packaging fee */}
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>
-                Freshness Degas Packaging
-              </Text>
+              <Text style={styles.summaryLabel}>Freshness Degas Packaging</Text>
               <Text style={styles.summaryValue}>₹{pricing.packagingFee}</Text>
             </View>
 
+            {/* 5% GST */}
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>GST (5%)</Text>
               <Text style={styles.summaryValue}>₹{pricing.taxAmount}</Text>
             </View>
 
+            {/* Shipping — shows FREE in green if threshold met */}
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Roaster Express Courier</Text>
-              <Text
-                style={[
-                  styles.summaryValue,
-                  pricing.shippingFee === 0 && { color: Colors.light.success },
-                ]}
-              >
+              <Text style={[styles.summaryValue, pricing.shippingFee === 0 && { color: Colors.light.success }]}>
                 {pricing.shippingFee === 0 ? 'FREE' : `₹${pricing.shippingFee}`}
               </Text>
             </View>
 
             <View style={styles.divider} />
 
+            {/* Grand total */}
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Estimated Total</Text>
               <Text style={styles.totalValue}>₹{pricing.total}</Text>
             </View>
           </View>
 
-          {/* Checkout CTA */}
+          {/* ── Checkout CTA ── shows total in button label */}
           <View style={styles.checkoutWrapper}>
             <CustomButton
               title={`Proceed to Roaster Checkout • ₹${pricing.total}`}
@@ -312,6 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.background,
   },
+  // Top bar: title left, item count right
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -336,10 +305,7 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     fontWeight: '600',
   },
-  scrollContent: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.huge,
-  },
+  // Centered empty state
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
@@ -370,10 +336,15 @@ const styles = StyleSheet.create({
   emptyBtn: {
     minWidth: 200,
   },
+  scrollContent: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.huge,
+  },
   itemsList: {
     gap: Spacing.md,
     marginTop: Spacing.md,
   },
+  // Horizontal card: image left, info right
   itemCard: {
     flexDirection: 'row',
     backgroundColor: Colors.light.surface,
@@ -394,6 +365,7 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.md,
     justifyContent: 'space-between',
   },
+  // Name + trash icon row
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -411,6 +383,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
+  // Price + stepper row
   itemFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -421,6 +394,7 @@ const styles = StyleSheet.create({
     ...Typography.priceMedium,
     color: Colors.light.textPrimary,
   },
+  // Stepper: minus | count | plus
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -439,6 +413,7 @@ const styles = StyleSheet.create({
     minWidth: 24,
     textAlign: 'center',
   },
+  // Promo code section card
   promoSection: {
     marginTop: Spacing.xl,
     backgroundColor: Colors.light.surface,
@@ -452,6 +427,7 @@ const styles = StyleSheet.create({
     color: Colors.light.textPrimary,
     marginBottom: Spacing.sm,
   },
+  // Input + Apply button side by side
   promoInputRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
@@ -475,6 +451,7 @@ const styles = StyleSheet.create({
     color: Colors.light.error,
     marginTop: Spacing.xs,
   },
+  // Row of quick-tap promo chips
   promoChipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -499,6 +476,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: Colors.light.textSecondary,
   },
+  // Applied promo row: code info + remove X
   appliedPromoBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -523,6 +501,7 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     fontSize: 12,
   },
+  // Order summary card
   summaryCard: {
     marginTop: Spacing.lg,
     backgroundColor: Colors.light.surface,
@@ -551,6 +530,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.divider,
     marginVertical: Spacing.sm + 2,
   },
+  // Grand total row — larger text
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

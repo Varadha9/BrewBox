@@ -1,14 +1,17 @@
+/**
+ * BottomTabNavigator.tsx — The 5-tab navigation bar at the bottom of the app.
+ * Tabs: Roastery (Home), Explore, Saved (Wishlist), BrewBox (Cart), Palate (Profile).
+ * Also shows a live item count badge on the Cart tab icon.
+ */
+
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+// createBottomTabNavigator = creates the persistent bottom tab bar
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// BespokeIcon = our custom SVG icon library (no external font dependencies)
 import { BespokeIcon } from '../components';
-import {
-  CartScreen,
-  ExploreScreen,
-  HomeScreen,
-  ProfileScreen,
-  WishlistScreen,
-} from '../screens';
+import { CartScreen, ExploreScreen, HomeScreen, ProfileScreen, WishlistScreen } from '../screens';
+// useCartStore = read cart item count to show the badge number
 import { useCartStore } from '../store';
 import { Colors, Spacing, Typography } from '../theme';
 import { MainTabParamList } from '../types';
@@ -16,6 +19,7 @@ import { MainTabParamList } from '../types';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const BottomTabNavigator: React.FC = () => {
+  // Get total items in cart — shown as a badge on the cart tab icon
   const { getItemCount } = useCartStore();
   const cartCount = getItemCount();
 
@@ -25,11 +29,12 @@ export const BottomTabNavigator: React.FC = () => {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.light.primary,
-        tabBarInactiveTintColor: Colors.light.textMuted,
+        tabBarActiveTintColor: Colors.light.primary,      // Terracotta for active tab
+        tabBarInactiveTintColor: Colors.light.textMuted,  // Grey for inactive tabs
         tabBarLabelStyle: styles.tabBarLabel,
       }}
     >
+      {/* Tab 1 — Home screen: hero banner, featured products, collections */}
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
@@ -43,6 +48,7 @@ export const BottomTabNavigator: React.FC = () => {
         }}
       />
 
+      {/* Tab 2 — Explore screen: search, filters, sorting */}
       <Tab.Screen
         name="ExploreTab"
         component={ExploreScreen}
@@ -56,6 +62,7 @@ export const BottomTabNavigator: React.FC = () => {
         }}
       />
 
+      {/* Tab 3 — Wishlist screen: saved/hearted products */}
       <Tab.Screen
         name="WishlistTab"
         component={WishlistScreen}
@@ -69,6 +76,7 @@ export const BottomTabNavigator: React.FC = () => {
         }}
       />
 
+      {/* Tab 4 — Cart screen: items, promo codes, checkout */}
       <Tab.Screen
         name="CartTab"
         component={CartScreen}
@@ -77,6 +85,7 @@ export const BottomTabNavigator: React.FC = () => {
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconBox, focused && styles.iconBoxFocused]}>
               <BespokeIcon name="bag" size={20} color={color} />
+              {/* Badge: only shows when cart has items */}
               {cartCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{cartCount}</Text>
@@ -87,6 +96,7 @@ export const BottomTabNavigator: React.FC = () => {
         }}
       />
 
+      {/* Tab 5 — Profile screen: taste profile, orders, Palate Matcher quiz */}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
@@ -111,7 +121,7 @@ const styles = StyleSheet.create({
     height: 64,
     paddingBottom: Spacing.sm,
     paddingTop: Spacing.xs + 2,
-    elevation: 8,
+    elevation: 8,                           // Android shadow
     shadowColor: '#1A120B',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.05,
@@ -123,6 +133,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 2,
   },
+  // Container for icon + badge — position: relative allows badge to overlap
   iconBox: {
     position: 'relative',
     alignItems: 'center',
@@ -130,9 +141,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  // Active tab icon scales up slightly for a tactile feel
   iconBoxFocused: {
     transform: [{ scale: 1.08 }],
   },
+  // Red circle badge showing cart item count
   badge: {
     position: 'absolute',
     top: -4,

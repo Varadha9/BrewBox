@@ -1,4 +1,7 @@
+// create is Zustand's store factory — creates a global reactive state store.
 import { create } from 'zustand';
+
+// We import all the TypeScript types needed to describe the user's data.
 import {
   CartItem,
   Order,
@@ -9,6 +12,9 @@ import {
   UserTasteProfile,
 } from '../types';
 
+// ── Seed Data: Default Shipping Address ──────────────────────────────────────
+// Pre-populated address for the demo user profile.
+// In a real app, this would come from a backend database.
 const INITIAL_ADDRESS: ShippingAddress = {
   id: 'addr-1',
   fullName: 'Varad Mandhare',
@@ -20,13 +26,17 @@ const INITIAL_ADDRESS: ShippingAddress = {
   isDefault: true,
 };
 
+// ── Seed Data: Default User Profile ──────────────────────────────────────────
+// Pre-populated user profile shown in the Profile/Palate screen.
+// memberTier and memberPoints simulate a loyalty rewards system.
+// tasteProfile stores the user's preferences set via the Palate Matcher Quiz.
 const INITIAL_PROFILE: UserProfile = {
   id: 'usr-101',
   name: 'Varad Mandhare',
   email: 'varad@brewbox.craft',
   phone: '+91 98765 43210',
-  memberTier: 'Roastery Gold',
-  memberPoints: 480,
+  memberTier: 'Roastery Gold',   // Loyalty tier: Bronze → Gold → Connoisseur Black
+  memberPoints: 480,              // Points earned from past orders (₹10 spent = 1 point)
   tasteProfile: {
     preferredRoast: ['Light', 'Medium-Light'],
     preferredBrewMethods: ['Hario V60', 'AeroPress'],
@@ -38,6 +48,9 @@ const INITIAL_PROFILE: UserProfile = {
   defaultGrindPreference: 'Pour Over / V60 (Medium)',
 };
 
+// ── Seed Data: Pre-existing Order ────────────────────────────────────────────
+// A sample order in "roasting" status to demonstrate the 5-stage order tracking UI.
+// This shows the jury how the live order tracking pipeline looks with real data.
 const INITIAL_ORDERS: Order[] = [
   {
     id: 'ord-8831',
@@ -79,8 +92,8 @@ const INITIAL_ORDERS: Order[] = [
     shipping: 99,
     tax: 36,
     total: 855,
-    status: 'roasting',
-    currentStepIndex: 1,
+    status: 'roasting',       // Current stage in the 5-step pipeline
+    currentStepIndex: 1,      // Index 1 = "Small-Batch Roasting" step is active
     steps: [
       {
         status: 'placed',
@@ -122,13 +135,25 @@ const INITIAL_ORDERS: Order[] = [
   },
 ];
 
+// ── UserStore Interface ───────────────────────────────────────────────────────
+// Defines the shape of the user store: profile data, order history, and actions.
 export interface UserStore {
-  profile: UserProfile;
-  orders: Order[];
+  profile: UserProfile;  // The logged-in user's profile and taste preferences
+  orders: Order[];       // Full order history (newest first)
 
+  // updateTasteProfile: saves the user's quiz results from the Palate Matcher.
+  // Uses Partial<UserTasteProfile> so only changed fields need to be passed.
   updateTasteProfile: (profile: Partial<UserTasteProfile>) => void;
+
+  // addAddress: adds a new shipping address to the user's address book.
   addAddress: (address: Omit<ShippingAddress, 'id'>) => void;
+
+  // setDefaultAddress: marks one address as the default for checkout.
   setDefaultAddress: (addressId: string) => void;
+
+  // createOrderFromCart: the most important action — converts the cart into a new Order.
+  // Called by CheckoutScreen after payment confirmation.
+  // Returns the newly created Order object so the app can navigate to order tracking.
   createOrderFromCart: (
     items: CartItem[],
     subtotal: number,
@@ -140,10 +165,15 @@ export interface UserStore {
   ) => Order;
 }
 
+// ── useUserStore ──────────────────────────────────────────────────────────────
+// The Zustand store for user profile, taste preferences, and order history.
 export const useUserStore = create<UserStore>((set, get) => ({
   profile: INITIAL_PROFILE,
   orders: INITIAL_ORDERS,
 
+  // ── updateTasteProfile ──────────────────────────────────────────────────────
+  // Merges new taste preference values into the existing tasteProfile.
+  // The spread operator (...) ensures we only overwrite the fields that changed.
   updateTasteProfile: (newProfile) => {
     set((state) => ({
       profile: {
@@ -156,6 +186,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
     }));
   },
 
+  // ── addAddress ──────────────────────────────────────────────────────────────
+  // Creates a new address with a unique ID (using Date.now() as a simple unique key)
+  // and appends it to the user's address list.
   addAddress: (addressData) => {
     const newAddress: ShippingAddress = {
       ...addressData,
@@ -169,6 +202,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
     }));
   },
 
+  // ── setDefaultAddress ───────────────────────────────────────────────────────
+  // Maps over all addresses and sets isDefault = true only for the matching ID.
+  // All other addresses get isDefault = false.
   setDefaultAddress: (addressId) => {
     set((state) => ({
       profile: {
@@ -181,6 +217,11 @@ export const useUserStore = create<UserStore>((set, get) => ({
     }));
   },
 
+  // ── createOrderFromCart ─────────────────────────────────────────────────────
+  // Converts the current cart into a new Order with a 5-stage tracking pipeline.
+  // This is called when the user confirms payment on the Checkout screen.
+  // After creation, the order is prepended to the orders array (newest first).
+  // The user also earns loyalty points: 1 point per ₹10 spent.
   createOrderFromCart: (
     items,
     subtotal,
@@ -190,9 +231,12 @@ export const useUserStore = create<UserStore>((set, get) => ({
     total,
     paymentMethod
   ) => {
+    // Find the user's default shipping address for this order
     const defaultAddr =
       get().profile.addresses.find((a) => a.isDefault) || get().profile.addresses[0];
 
+    // Build the 5-stage roastery tracking pipeline.
+    // Only the first step (placed) is marked completed = true at order creation.
     const steps: OrderTrackingStep[] = [
       {
         status: 'placed',
@@ -227,7 +271,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
       },
     ];
 
+    // Generate a random 4-digit suffix for the order number (e.g. BB-2026-4821)
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
       orderNumber: `BB-2026-${randomSuffix}`,
@@ -239,8 +285,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
       shipping,
       tax,
       total,
-      status: 'placed',
-      currentStepIndex: 0,
+      status: 'placed',       // New orders always start at the "placed" stage
+      currentStepIndex: 0,    // Index 0 = first step is active
       steps,
       shippingAddress: defaultAddr,
       paymentMethod,
@@ -249,13 +295,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
     };
 
     set((state) => ({
-      orders: [newOrder, ...state.orders],
+      orders: [newOrder, ...state.orders], // Prepend new order (newest first)
       profile: {
         ...state.profile,
+        // Award loyalty points: 1 point per ₹10 spent (Math.round for whole numbers)
         memberPoints: state.profile.memberPoints + Math.round(total / 10),
       },
     }));
 
-    return newOrder;
+    return newOrder; // Return the order so CheckoutScreen can navigate to tracking
   },
 }));
