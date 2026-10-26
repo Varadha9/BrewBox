@@ -76,7 +76,7 @@ describe('BrewBox Cart & Business Logic Tests', () => {
     // ROASTMASTER15 requires ₹900 min order
     const applied = store.applyPromo('ROASTMASTER15');
     expect(applied).toBe(false);
-    expect(useCartStore.getState().promoError).toContain('Requires a minimum order of ₹900');
+    expect(useCartStore.getState().promoError).toContain('Requires minimum order of ₹900');
   });
 
   test('should create a tracked order in userStore upon checkout', () => {

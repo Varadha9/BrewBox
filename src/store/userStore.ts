@@ -1,159 +1,95 @@
-// create is Zustand's store factory — creates a global reactive state store.
-import { create } from 'zustand';
+/**
+ * userStore.ts — Global reactive state for user registration, authentication,
+ * active user profile, shipping addresses, taste preferences, and orders.
+ *
+ * All credentials & passwords are stored locally in state.
+ * Unauthenticated users must sign up or sign in to enter BrewBox.
+ */
 
-// We import all the TypeScript types needed to describe the user's data.
+import { create } from 'zustand';
 import {
   CartItem,
   Order,
   OrderTrackingStep,
   PaymentMethodType,
+  RegisteredUser,
   ShippingAddress,
   UserProfile,
   UserTasteProfile,
 } from '../types';
 
-// ── Seed Data: Default Shipping Address ──────────────────────────────────────
-// Pre-populated address for the demo user profile.
-// In a real app, this would come from a backend database.
-const INITIAL_ADDRESS: ShippingAddress = {
-  id: 'addr-1',
-  fullName: 'Varad Mandhare',
-  phone: '+91 98765 43210',
-  street: 'Flat 402, Roastery Apartments, 12th Main Indiranagar',
-  city: 'Bengaluru',
-  state: 'Karnataka',
-  postalCode: '560038',
+// ── Fallback Address Template ────────────────────────────────────────────────
+const createDefaultAddress = (name: string, phone: string): ShippingAddress => ({
+  id: `addr-${Date.now()}`,
+  fullName: name,
+  phone: phone,
+  street: '12th Main Road, Roastery Quarter',
+  city: 'Pune',
+  state: 'Maharashtra',
+  postalCode: '412201',
   isDefault: true,
-};
+});
 
-// ── Seed Data: Default User Profile ──────────────────────────────────────────
-// Pre-populated user profile shown in the Profile/Palate screen.
-// memberTier and memberPoints simulate a loyalty rewards system.
-// tasteProfile stores the user's preferences set via the Palate Matcher Quiz.
-const INITIAL_PROFILE: UserProfile = {
-  id: 'usr-101',
-  name: 'Varad Mandhare',
-  email: 'varad@brewbox.craft',
-  phone: '+91 98765 43210',
-  memberTier: 'Roastery Gold',   // Loyalty tier: Bronze → Gold → Connoisseur Black
-  memberPoints: 480,              // Points earned from past orders (₹10 spent = 1 point)
+// ── Profile Factory ──────────────────────────────────────────────────────────
+// Generates a complete UserProfile for a newly registered or authenticated user
+export const createProfileForUser = (user: {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}): UserProfile => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  phone: user.phone,
+  memberTier: 'Artisan Bronze',
+  memberPoints: 100, // 100 welcome bean rewards upon sign up
   tasteProfile: {
-    preferredRoast: ['Light', 'Medium-Light'],
-    preferredBrewMethods: ['Hario V60', 'AeroPress'],
-    tasteLeaning: 'Bright & Fruity',
+    preferredRoast: ['Medium-Light'],
+    preferredBrewMethods: ['Hario V60'],
+    tasteLeaning: 'Balanced & Sweet',
     milkPreference: 'Black / Straight',
-    cupFrequencyDaily: 3,
+    cupFrequencyDaily: 2,
   },
-  addresses: [INITIAL_ADDRESS],
+  addresses: [createDefaultAddress(user.name, user.phone)],
   defaultGrindPreference: 'Pour Over / V60 (Medium)',
-};
-
-// ── Seed Data: Pre-existing Order ────────────────────────────────────────────
-// A sample order in "roasting" status to demonstrate the 5-stage order tracking UI.
-// This shows the jury how the live order tracking pipeline looks with real data.
-const INITIAL_ORDERS: Order[] = [
-  {
-    id: 'ord-8831',
-    orderNumber: 'BB-2026-8831',
-    createdAt: 'Today, 10:30 AM',
-    estimatedDelivery: 'Tomorrow by 4:00 PM',
-    items: [
-      {
-        id: 'sample-cart-item-1',
-        product: {
-          id: 'prod-ethiopia-idido',
-          name: 'Ethiopia Yirgacheffe Idido',
-          tagline: 'Anaerobic Natural Micro-Lot with Wild Jasmine & Meyer Lemon',
-          category: 'coffee',
-          subcategory: 'single-origin',
-          basePrice: 720,
-          currency: '₹',
-          rating: 4.9,
-          reviewCount: 142,
-          image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80',
-          galleryImages: [],
-          inStock: true,
-          tastingNotes: ['Bergamot', 'Wild Jasmine', 'Ripe Peach'],
-          description: 'A breathtaking micro-lot from Idido.',
-          roasterStory: 'Roasted on Loring S15 Kestrel.',
-          availableGrinds: ['Whole Bean', 'Pour Over / V60 (Medium)'],
-          weightOptions: [{ weightGrams: 250, label: '250g Bag', priceMultiplier: 1 }],
-          reviews: [],
-        },
-        selectedGrind: 'Pour Over / V60 (Medium)',
-        selectedWeight: { weightGrams: 250, label: '250g Bag', priceMultiplier: 1 },
-        quantity: 1,
-        unitPrice: 720,
-        totalPrice: 720,
-      },
-    ],
-    subtotal: 720,
-    discount: 0,
-    shipping: 99,
-    tax: 36,
-    total: 855,
-    status: 'roasting',       // Current stage in the 5-step pipeline
-    currentStepIndex: 1,      // Index 1 = "Small-Batch Roasting" step is active
-    steps: [
-      {
-        status: 'placed',
-        label: 'Order Placed & Green Beans Allocated',
-        sublabel: 'Batch #428 reserved at Roastery',
-        completed: true,
-        timestamp: '10:30 AM',
-      },
-      {
-        status: 'roasting',
-        label: 'Small-Batch Roasting on Loring S15',
-        sublabel: 'Master Roaster dialing development profile',
-        completed: true,
-        timestamp: '11:15 AM',
-      },
-      {
-        status: 'packed',
-        label: 'Degassing & Nitrogen Valve Sealed',
-        sublabel: 'Guaranteed peak freshness preservation',
-        completed: false,
-      },
-      {
-        status: 'dispatched',
-        label: 'Dispatched via Temperature-Controlled Courier',
-        sublabel: 'Fast express door-to-door transit',
-        completed: false,
-      },
-      {
-        status: 'delivered',
-        label: 'Delivered to Your Doorstep',
-        sublabel: 'Ready for grinding and brewing',
-        completed: false,
-      },
-    ],
-    shippingAddress: INITIAL_ADDRESS,
-    paymentMethod: 'upi',
-    roastBatchId: 'LOT-IDIDO-0428',
-    roastDate: 'Roasted Today',
-  },
-];
+});
 
 // ── UserStore Interface ───────────────────────────────────────────────────────
-// Defines the shape of the user store: profile data, order history, and actions.
 export interface UserStore {
-  profile: UserProfile;  // The logged-in user's profile and taste preferences
-  orders: Order[];       // Full order history (newest first)
+  // Locally stored user registrations (password stored locally in memory)
+  registeredUsers: RegisteredUser[];
 
-  // updateTasteProfile: saves the user's quiz results from the Palate Matcher.
-  // Uses Partial<UserTasteProfile> so only changed fields need to be passed.
+  // Session state: false by default — user MUST sign up or sign in
+  isAuthenticated: boolean;
+
+  // Active logged-in user profile (null when signed out)
+  profile: UserProfile | null;
+
+  // Order history for the current session
+  orders: Order[];
+
+  // ── Authentication Actions ──
+  signup: (data: {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) => { success: boolean; error?: string };
+
+  login: (
+    email: string,
+    password: string
+  ) => { success: boolean; error?: string };
+
+  logout: () => void;
+
+  // ── Profile & Address Actions ──
   updateTasteProfile: (profile: Partial<UserTasteProfile>) => void;
-
-  // addAddress: adds a new shipping address to the user's address book.
   addAddress: (address: Omit<ShippingAddress, 'id'>) => void;
-
-  // setDefaultAddress: marks one address as the default for checkout.
   setDefaultAddress: (addressId: string) => void;
 
-  // createOrderFromCart: the most important action — converts the cart into a new Order.
-  // Called by CheckoutScreen after payment confirmation.
-  // Returns the newly created Order object so the app can navigate to order tracking.
+  // ── Order Creation ──
   createOrderFromCart: (
     items: CartItem[],
     subtotal: number,
@@ -165,63 +101,143 @@ export interface UserStore {
   ) => Order;
 }
 
-// ── useUserStore ──────────────────────────────────────────────────────────────
-// The Zustand store for user profile, taste preferences, and order history.
+// ── useUserStore Implementation ──────────────────────────────────────────────
 export const useUserStore = create<UserStore>((set, get) => ({
-  profile: INITIAL_PROFILE,
-  orders: INITIAL_ORDERS,
+  registeredUsers: [],
+  isAuthenticated: false, // Default: NOT authenticated — user must sign up/in
+  profile: null,          // Default: No active account loaded
+  orders: [],             // Fresh order list
+
+  // ── signup ──────────────────────────────────────────────────────────────────
+  // Saves user details and password locally. Automatically signs in the new user.
+  signup: ({ name, email, phone, password }) => {
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanName = name.trim();
+    const cleanPhone = phone.trim();
+
+    // Check if user already exists locally
+    const existing = get().registeredUsers.find(
+      (u) => u.email.toLowerCase() === cleanEmail
+    );
+    if (existing) {
+      return {
+        success: false,
+        error: 'An account with this email already exists. Please sign in.',
+      };
+    }
+
+    const newUser: RegisteredUser = {
+      id: `usr-${Date.now()}`,
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      password: password, // Stored locally only
+      createdAt: new Date().toISOString(),
+    };
+
+    const newProfile = createProfileForUser(newUser);
+
+    set((state) => ({
+      registeredUsers: [...state.registeredUsers, newUser],
+      profile: newProfile,
+      isAuthenticated: true,
+      orders: [],
+    }));
+
+    return { success: true };
+  },
+
+  // ── login ───────────────────────────────────────────────────────────────────
+  // Validates email and password against locally registered accounts.
+  login: (email, password) => {
+    const cleanEmail = email.toLowerCase().trim();
+    const user = get().registeredUsers.find(
+      (u) => u.email.toLowerCase() === cleanEmail
+    );
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'No account found with this email. Please sign up first.',
+      };
+    }
+
+    if (user.password !== password) {
+      return {
+        success: false,
+        error: 'Incorrect password. Please verify and try again.',
+      };
+    }
+
+    const activeProfile = createProfileForUser(user);
+
+    set({
+      profile: activeProfile,
+      isAuthenticated: true,
+    });
+
+    return { success: true };
+  },
+
+  // ── logout ──────────────────────────────────────────────────────────────────
+  // Resets session state. User must sign in or sign up again to re-enter.
+  logout: () => {
+    set({
+      profile: null,
+      isAuthenticated: false,
+    });
+  },
 
   // ── updateTasteProfile ──────────────────────────────────────────────────────
-  // Merges new taste preference values into the existing tasteProfile.
-  // The spread operator (...) ensures we only overwrite the fields that changed.
   updateTasteProfile: (newProfile) => {
-    set((state) => ({
-      profile: {
-        ...state.profile,
-        tasteProfile: {
-          ...state.profile.tasteProfile,
-          ...newProfile,
+    set((state) => {
+      if (!state.profile) return state;
+      return {
+        profile: {
+          ...state.profile,
+          tasteProfile: {
+            ...state.profile.tasteProfile,
+            ...newProfile,
+          },
         },
-      },
-    }));
+      };
+    });
   },
 
   // ── addAddress ──────────────────────────────────────────────────────────────
-  // Creates a new address with a unique ID (using Date.now() as a simple unique key)
-  // and appends it to the user's address list.
   addAddress: (addressData) => {
     const newAddress: ShippingAddress = {
       ...addressData,
       id: `addr-${Date.now()}`,
     };
-    set((state) => ({
-      profile: {
-        ...state.profile,
-        addresses: [...state.profile.addresses, newAddress],
-      },
-    }));
+    set((state) => {
+      if (!state.profile) return state;
+      return {
+        profile: {
+          ...state.profile,
+          addresses: [...state.profile.addresses, newAddress],
+        },
+      };
+    });
   },
 
   // ── setDefaultAddress ───────────────────────────────────────────────────────
-  // Maps over all addresses and sets isDefault = true only for the matching ID.
-  // All other addresses get isDefault = false.
   setDefaultAddress: (addressId) => {
-    set((state) => ({
-      profile: {
-        ...state.profile,
-        addresses: state.profile.addresses.map((addr) => ({
-          ...addr,
-          isDefault: addr.id === addressId,
-        })),
-      },
-    }));
+    set((state) => {
+      if (!state.profile) return state;
+      return {
+        profile: {
+          ...state.profile,
+          addresses: state.profile.addresses.map((addr) => ({
+            ...addr,
+            isDefault: addr.id === addressId,
+          })),
+        },
+      };
+    });
   },
 
   // ── createOrderFromCart ─────────────────────────────────────────────────────
-  // Converts the current cart into a new Order with a 5-stage tracking pipeline.
-  // This is called when the user confirms payment on the Checkout screen.
-  // After creation, the order is prepended to the orders array (newest first).
-  // The user also earns loyalty points: 1 point per ₹10 spent.
   createOrderFromCart: (
     items,
     subtotal,
@@ -231,12 +247,12 @@ export const useUserStore = create<UserStore>((set, get) => ({
     total,
     paymentMethod
   ) => {
-    // Find the user's default shipping address for this order
+    const currentProfile = get().profile;
     const defaultAddr =
-      get().profile.addresses.find((a) => a.isDefault) || get().profile.addresses[0];
+      currentProfile?.addresses.find((a) => a.isDefault) ||
+      currentProfile?.addresses[0] ||
+      createDefaultAddress('BrewBox Member', '+91 98765 43210');
 
-    // Build the 5-stage roastery tracking pipeline.
-    // Only the first step (placed) is marked completed = true at order creation.
     const steps: OrderTrackingStep[] = [
       {
         status: 'placed',
@@ -271,7 +287,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
       },
     ];
 
-    // Generate a random 4-digit suffix for the order number (e.g. BB-2026-4821)
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
 
     const newOrder: Order = {
@@ -285,8 +300,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
       shipping,
       tax,
       total,
-      status: 'placed',       // New orders always start at the "placed" stage
-      currentStepIndex: 0,    // Index 0 = first step is active
+      status: 'placed',
+      currentStepIndex: 0,
       steps,
       shippingAddress: defaultAddr,
       paymentMethod,
@@ -295,14 +310,16 @@ export const useUserStore = create<UserStore>((set, get) => ({
     };
 
     set((state) => ({
-      orders: [newOrder, ...state.orders], // Prepend new order (newest first)
-      profile: {
-        ...state.profile,
-        // Award loyalty points: 1 point per ₹10 spent (Math.round for whole numbers)
-        memberPoints: state.profile.memberPoints + Math.round(total / 10),
-      },
+      orders: [newOrder, ...state.orders],
+      profile: state.profile
+        ? {
+            ...state.profile,
+            memberPoints:
+              state.profile.memberPoints + Math.round(total / 10),
+          }
+        : null,
     }));
 
-    return newOrder; // Return the order so CheckoutScreen can navigate to tracking
+    return newOrder;
   },
 }));

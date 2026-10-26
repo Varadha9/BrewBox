@@ -23,6 +23,11 @@ export type MainTabParamList = {
 // Defines all screens in the RootNavigator (the full-screen stack on top of tabs).
 // This is the complete navigation map of the entire app.
 export type RootStackParamList = {
+  // ── Auth Stack ──
+  SignUp: undefined;
+  SignIn: undefined;
+
+  // ── Main App Stack ──
   // MainTabs wraps the entire bottom tab navigator.
   // NavigatorScreenParams<MainTabParamList> allows passing tab-level params through.
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;

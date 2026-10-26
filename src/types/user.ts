@@ -31,3 +31,15 @@ export interface UserProfile {
   addresses: ShippingAddress[];          // Saved delivery addresses
   defaultGrindPreference: GrindOption;   // Pre-selected grind on the product details screen
 }
+
+// ── RegisteredUser ───────────────────────────────────────────────────────────
+// Stored locally in userStore. Keeps user registration credentials & local password.
+export interface RegisteredUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string; // Kept in local state only
+  createdAt: string;
+}
+

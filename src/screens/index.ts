@@ -7,3 +7,5 @@ export * from './wishlist/WishlistScreen';
 export * from './orders/OrderHistoryScreen';
 export * from './profile/ProfileScreen';
 export * from './profile/CoffeeQuizModal';
+export * from './auth';
+

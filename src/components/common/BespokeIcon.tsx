@@ -42,7 +42,12 @@ export type IconName =
   | 'map-pin'
   | 'close'
   | 'info'
-  | 'sliders';
+  | 'sliders'
+  | 'mail'
+  | 'lock'
+  | 'eye'
+  | 'eye-off'
+  | 'log-out';
 
 // ── BespokeIconProps ──────────────────────────────────────────────────────────
 // Props accepted by the BespokeIcon component.
@@ -578,6 +583,53 @@ export const BespokeIcon: React.FC<BespokeIconProps> = ({
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
           <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth={1.8} />
           <Path d="M12 8V8.5M12 11V16" stroke={color} strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+      );
+
+    // ── Mail / Email ──────────────────────────────────────────────────────────
+    case 'mail':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Rect x="3" y="5" width="18" height="14" rx="2" stroke={color} strokeWidth={1.8} />
+          <Path d="M3 7L12 13L21 7" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    // ── Lock / Password ────────────────────────────────────────────────────────
+    case 'lock':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Rect x="5" y="11" width="14" height="10" rx="2" stroke={color} strokeWidth={1.8} />
+          <Path d="M8 11V7C8 4.79 9.79 3 12 3C14.21 3 16 4.79 16 7V11" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+          <Circle cx="12" cy="16" r="1.5" fill={color} />
+        </Svg>
+      );
+
+    // ── Eye (Show Password) ────────────────────────────────────────────────────
+    case 'eye':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+          <Circle cx="12" cy="12" r="3" stroke={color} strokeWidth={1.8} />
+        </Svg>
+      );
+
+    // ── Eye Off (Hide Password) ────────────────────────────────────────────────
+    case 'eye-off':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path d="M17.94 17.94C16.23 19.24 14.18 20 12 20C5 20 1 12 1 12C2.24 9.72 4.09 7.82 6.36 6.55M9.9 4.24C10.58 4.08 11.28 4 12 4C19 4 23 12 23 12C22.18 13.52 21.05 14.88 19.67 15.96" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M1 1L23 23" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+        </Svg>
+      );
+
+    // ── Log Out / Exit ─────────────────────────────────────────────────────────
+    case 'log-out':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path d="M9 21H5C3.89 21 3 20.1 3 19V5C3 3.89 3.89 3 5 3H9" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M16 17L21 12L16 7" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M21 12H9" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
 

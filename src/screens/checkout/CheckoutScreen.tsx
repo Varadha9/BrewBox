@@ -38,6 +38,10 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) =>
   // successOrder — holds the newly created order; triggers success modal when set
   const [successOrder, setSuccessOrder] = useState<any>(null);
 
+  if (!profile) {
+    return null;
+  }
+
   const selectedAddress = profile.addresses[selectedAddressIndex] || profile.addresses[0];
 
   // handlePlaceOrder — simulates a 1.2s payment delay, then creates the order

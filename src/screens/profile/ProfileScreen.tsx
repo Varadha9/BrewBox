@@ -24,9 +24,14 @@ interface ProfileScreenProps {
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   // profile = full user object (name, email, tier, taste preferences, addresses)
-  const { profile } = useUserStore();
+  const { profile, logout } = useUserStore();
   // quizVisible = controls whether the Palate Matcher quiz modal is open
   const [quizVisible, setQuizVisible] = useState(false);
+
+  // If user is logged out, avoid rendering profile UI
+  if (!profile) {
+    return null;
+  }
 
   // After quiz completes, navigate to the recommended product's details page
   const handleSelectQuizProduct = (product: Product) => {
@@ -156,6 +161,19 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             BrewBox was founded by Varad Vikas Mandhare to celebrate the dedication of smallholder coffee farmers and artisan tea growers worldwide. Every batch is roasted micro-lot by micro-lot with uncompromised craft.
           </Text>
           <Text style={styles.versionText}>Version 1.0.0 • Artisanal Edition</Text>
+        </View>
+
+        {/* ── Sign Out Button ── */}
+        <View style={styles.signOutCard}>
+          <CustomButton
+            title="Sign Out of Roastery"
+            onPress={logout}
+            variant="outline"
+            icon={<BespokeIcon name="log-out" size={18} color={Colors.light.error} />}
+            iconPosition="left"
+            fullWidth
+            style={styles.signOutButton}
+          />
         </View>
       </ScrollView>
 
@@ -375,5 +393,13 @@ const styles = StyleSheet.create({
     color: Colors.light.textMuted,
     fontSize: 10,
     letterSpacing: 0.5,
+  },
+  signOutCard: {
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  signOutButton: {
+    borderColor: '#E8B4B8',
+    backgroundColor: '#FFF8F8',
   },
 });
