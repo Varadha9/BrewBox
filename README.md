@@ -6,11 +6,19 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0%20Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Zustand](https://img.shields.io/badge/State-Zustand%205.0-764ABC?style=for-the-badge)](https://github.com/pmndrs/zustand)
 [![Android](https://img.shields.io/badge/Platform-Android%20API%2034%2F35-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/)
+[![Direct APK Download](https://img.shields.io/badge/Download-Android%20APK%20(v1.0.0)-D48B46?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Varadha9/BrewBox/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-C86D3B?style=for-the-badge)](LICENSE)
 
 **A bespoke, high-craft mobile e-commerce application crafted specifically for single-origin coffee connoisseurs, micro-lot enthusiasts, and ceremonial tea purists.**
 
-[Explore Features](#-curated-features) • [Artisanal Design System](#-artisanal-design-system) • [Architecture](#-architecture--state-design) • [Offline APK Guide](#-standalone-offline-apk-build) • [Getting Started](#-getting-started)
+[Download APK](#-direct-apk-download) • [Explore Features](#-curated-features) • [Artisanal Design System](#-artisanal-design-system) • [Architecture](#-architecture--state-design) • [Getting Started](#-getting-started)
+
+<br/>
+
+> ### 📲 Direct Standalone APK Download
+> **Want to experience BrewBox on your Android phone right away?**  
+> **[⬇️ Download BrewBox-v1.0.0.apk (Direct Download)](https://github.com/Varadha9/BrewBox/releases/download/v1.0.0/BrewBox-v1.0.0.apk)**  
+> *Pre-bundled with Hermes JavaScript engine — 100% offline standalone, no computer or Metro server needed!*
 
 <br/>
 
